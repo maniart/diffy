@@ -1,0 +1,19 @@
+{
+  "name": "overlaps",
+  "version": "0.0.0",
+  "homepage": "https://github.com/maniart/overlaps",
+  "authors": [
+    "maniart <mani.art@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Wad": "wad#~2.2.3"
+  }
+}

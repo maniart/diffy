@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        #grid {
+            border: 0px solid #000;
+        }
+        img,
+        #camera-output,
+        #raw-image,
+        #diff-image {
+            display: none;
+        }
+    </style>
+    <title></title>
+</head>
+<body>
+    <img alt="overlaps" src="thumbnail.png">
+    <video id="camera-output" autoplay width="520" height="400"></video>
+    <canvas id="raw-image" width="400" height="400"></canvas>
+    <canvas id="diff-image" width="400" height="400"></canvas>
+    <canvas id="grid" width="400" height="400"></canvas>
+
+    <script src="main.js"></script>
+</body>
+</html>
