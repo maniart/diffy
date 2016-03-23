@@ -72,7 +72,12 @@ var lastImageData;
 /*
   video element rendering camera input
 */
-var cameraOutput = document.querySelector('#camera-output');
+var videoOutput = document.querySelector('#video-output');
+
+/*
+  canvas element rendering camera input
+*/
+var canvasOutput = document.querySelector('#canvas-output');
 
 /*
   capture from camera
@@ -89,11 +94,22 @@ function capture() {
 }
 
 /*
-  draws stream into a video element
-  returns undefined
+  draws stream into a output element (video or canvas)
+  returns stream
 */
-function drawToVideo(stream) {
-  cameraOutput.src = stream;
+function pipe(stream, output, type) {
+  switch(type) {
+    case 'video':
+      output.src = stream;
+      break;
+    case 'canvas':
+      output
+        .getContext('2d')
+        .putImageData(stream, 0, 0);
+      break;
+  }
+
+  return stream;
 }
 
 /*
@@ -113,10 +129,10 @@ function abs(value) {
 }
 
 /*
-  adjust contrast based on value and threshold
+  polarize pixel values based on value and threshold
   returns 0 or 0XFF
 */
-function contrast(value, threshold) {
+function polarize(value, threshold) {
   return (value > threshold) ? 0xFF : 0;
 }
 
@@ -158,7 +174,12 @@ function loop() {
 */
 function initialize() {
   return capture()
-    .then(drawToVideo)
+    .then(function(stream) {
+      return pipe(stream, videoOutput, 'video');
+    })
+    .then(function(stream) {
+      return pipe(stream, canvasOutput, 'canvas');
+    })
     .catch(function(error) {
       console.error('Failed to draw camera input to video ', error);
     });
