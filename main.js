@@ -22,7 +22,7 @@ window.requestAnimFrame = (function(){
 */
 function getUserMedia(constraints, successCallback, errorCallback) {
 
-  // First get ahold of getUserMedia, if present
+  // First get a hold of getUserMedia, if present
   var getUserMedia = (navigator.getUserMedia ||
       navigator.webkitGetUserMedia ||
       navigator.mozGetUserMedia);
@@ -53,11 +53,13 @@ if(navigator.mediaDevices.getUserMedia === undefined) {
 }
 
 
-// Prefer camera resolution nearest to 1280x720.
+/*
+  constraints object for getUserMedia
+*/
 var constraints = {
   audio: false,
   video: {
-    width: 1280, 
+    width: 1280,
     height: 720
   }
 };
@@ -81,8 +83,8 @@ function capture() {
     .then(function(stream) {
       return window.URL.createObjectURL(stream);
     })
-    .catch(function(err) {
-      console.log(err.name + ": " + err.message);
+    .catch(function(error) {
+      console.error(error.name + ' : ' + error.message);
     });
 }
 
