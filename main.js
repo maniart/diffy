@@ -4,17 +4,16 @@
   shim requestAnimationFrame api
   source: http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
 */
-window.requestAnimFrame = (function(){
-  return
-    window.requestAnimationFrame       ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame    ||
-    window.oRequestAnimationFrame      ||
-    window.msRequestAnimationFrame     ||
-    function( callback ){
-      window.setTimeout(callback, 1000 / 60);
-    };
-})();
+ var requestAnimFrame =
+  window.requestAnimationFrame       ||
+  window.webkitRequestAnimationFrame ||
+  window.mozRequestAnimationFrame    ||
+  window.oRequestAnimationFrame      ||
+  window.msRequestAnimationFrame     ||
+  function(callback){
+    window.setTimeout(callback, 1000 / 60);
+  };
+
 
 /*
   shim getUserMedia with a Promise api
@@ -95,21 +94,22 @@ function capture() {
 
 /*
   draws stream into a output element (video or canvas)
-  returns stream
+  returns output
 */
-function pipe(stream, output, type) {
+function pipe(input, output, type) {
   switch(type) {
     case 'video':
-      output.src = stream;
+      output.src = input;
       break;
     case 'canvas':
+      console.log('pipe canvas');
       output
         .getContext('2d')
-        .putImageData(stream, 0, 0);
+        .drawImage(input, 0, 0);
       break;
   }
 
-  return stream;
+  return output;
 }
 
 /*
@@ -161,11 +161,27 @@ function center(canvas) {
 }
 
 /*
+  initialize video capture
+  returns promise
+*/
+function initializeVideo() {
+
+}
+
+
+function drawRawImage(cameraInput, output) {
+    console.log('sup');
+    var ctx = output.getContext('2d');
+    var smallInputSide = Math.min(cameraInput.width, cameraInput.height);
+    ctx.drawImage(cameraInput, 0, 0, smallInputSide, smallInputSide, 0, 0, output.width, output.height);
+}
+/*
   iteratively calculate and draw
   returns undefined
 */
 function loop() {
-
+  pipe(videoOutput, canvasOutput, 'canvas');
+  requestAnimFrame(loop);
 }
 
 /*
@@ -173,14 +189,15 @@ function loop() {
   returns undefined
 */
 function initialize() {
-  return capture()
-    .then(function(stream) {
-      return pipe(stream, videoOutput, 'video');
-    })
-    .then(function(stream) {
-      return pipe(stream, canvasOutput, 'canvas');
-    })
-    .catch(function(error) {
+  capture().then(
+    function(input) {
+      pipe(input, videoOutput, 'video');
+    }
+  ).catch(
+    function(error) {
       console.error('Failed to draw camera input to video ', error);
-    });
+    }
+  );
+
+  loop();
 }
