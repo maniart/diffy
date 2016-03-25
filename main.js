@@ -96,17 +96,15 @@ function capture() {
   draws stream into a output element (video or canvas)
   returns output
 */
-function pipe(input, output, type) {
-  switch(type) {
-    case 'video':
-      output.src = input;
-      break;
-    case 'canvas':
-      console.log('pipe canvas');
-      output
-        .getContext('2d')
-        .drawImage(input, 0, 0);
-      break;
+function pipe(input, output) {
+  if(typeof input === 'string' && typeof output === 'object') {
+    // piping blob to video element
+    output.src = input;
+  } else if(typeof input === 'object' && typeof output === 'object') {
+    // piping video to canvas
+    output
+      .getContext('2d')
+      .drawImage(input, 0, 0);
   }
 
   return output;
@@ -145,14 +143,6 @@ function blend(canvas, width, height) {
 }
 
 /*
-  draw the motion image to canvas
-  returns canvas
-*/
-function drawToCanvas(canvas, resolutionX, resolutionY) {
-
-}
-
-/*
   center the canvas
   returns canvas
 */
@@ -168,19 +158,12 @@ function initializeVideo() {
 
 }
 
-
-function drawRawImage(cameraInput, output) {
-    console.log('sup');
-    var ctx = output.getContext('2d');
-    var smallInputSide = Math.min(cameraInput.width, cameraInput.height);
-    ctx.drawImage(cameraInput, 0, 0, smallInputSide, smallInputSide, 0, 0, output.width, output.height);
-}
 /*
   iteratively calculate and draw
   returns undefined
 */
 function loop() {
-  pipe(videoOutput, canvasOutput, 'canvas');
+  pipe(videoOutput, canvasOutput);
   requestAnimFrame(loop);
 }
 
@@ -191,7 +174,7 @@ function loop() {
 function initialize() {
   capture().then(
     function(input) {
-      pipe(input, videoOutput, 'video');
+      pipe(input, videoOutput);
     }
   ).catch(
     function(error) {
