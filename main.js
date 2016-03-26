@@ -84,6 +84,13 @@ var canvasOutput = document.querySelector('#canvas-output');
 var canvasBlend = document.querySelector('#canvas-blend');
 
 /*
+  TODO: refactor
+*/
+var blendWidth = canvasBlend.width;
+var blendHeight = canvasBlend.height;
+
+
+/*
   capture from camera
   returns objectUrl
  */
@@ -127,26 +134,42 @@ function mirror(canvas) {
   compare input and output average values
   returns ?
 */
-function compare(output, input1, input2) {
+function compare(input1, input2) {
+  // debugger;
   var length = input1.length;
+  var data1 = input1.data;
+  var data2 = input2.data;
   var average1;
   var average2;
   var delta;
-  var i = 0;
+  var imageData = canvasBlend
+    .getContext('2d')
+    .getImageData(0, 0, blendWidth, blendWidth);
+  //var i = 0;
 
-  while(i < length) {
-    average1 = (input1[i*4] + input1[i*4+1] + input1[i*4+2]) / 2.5;
-    average2 = (input2[i*4] + input2[i*4+1] + input2[i*4+2]) / 2.5;
-    delta = polarize(abs(average1 - average2), 0x15);
-    output[i*4] = delta;
-    output[i*4+1] = delta;
-    output[i*4+2] = delta;
-    output[i*4+3] = 0xFF;
-    ++i;
+  var buf = new ArrayBuffer(data1.length);
+  var buf8 = new Uint8ClampedArray(buf);
+  var data = new Uint32Array(buf);
+
+  var i;
+  for (var y = 0; y < blendHeight; ++y) {
+    for (var x = 0; x < blendWidth; ++x) {
+      i = y * blendWidth + x;
+      average1 = (data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 2.5;
+      average2 = (data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 2.5;
+      delta = polarize(abs(average1 - average2), 0x15);
+      //var value = x * y & 0xff;
+
+      data[i] =
+          (255   << 24) |    // alpha
+          (delta << 16) |    // blue
+          (delta <<  8) |    // green
+           delta;           // red
+    }
   }
 
-
-
+  imageData.data.set(buf8);
+  return imageData;
 
 }
 
@@ -177,8 +200,7 @@ function blend(input, output) {
   var height = input.height;
   var sourceData = inputCtx.getImageData(0, 0, width, height);
   prevSourceData = prevSourceData || inputCtx.getImageData(0, 0, width, height);
-  var blendData = inputCtx.createImageData(width, height);
-  compare(blendData.data, sourceData.data, prevSourceData.data);
+  var blendData = compare(sourceData, prevSourceData);
   outputCtx.putImageData(blendData, 0, 0);
   prevSourceData = sourceData;
 }
