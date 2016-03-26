@@ -66,7 +66,7 @@ var constraints = {
 /*
   latest captured image data
 */
-var lastImageData;
+var prevSourceData;
 
 /*
   video element rendering camera input
@@ -77,6 +77,11 @@ var videoOutput = document.querySelector('#video-output');
   canvas element rendering camera input
 */
 var canvasOutput = document.querySelector('#canvas-output');
+
+/*
+  canvas element rendering blend
+*/
+var canvasBlend = document.querySelector('#canvas-blend');
 
 /*
   capture from camera
@@ -104,7 +109,7 @@ function pipe(input, output) {
     // piping video to canvas
     output
       .getContext('2d')
-      .drawImage(input, 0, 0);
+      .drawImage(input, 0, 0, output.width, output.height);
   }
 
   return output;
@@ -115,6 +120,33 @@ function pipe(input, output) {
   returns canvas
 */
 function mirror(canvas) {
+
+}
+
+/*
+  compare input and output average values
+  returns ?
+*/
+function compare(output, input1, input2) {
+  var length = input1.length;
+  var average1;
+  var average2;
+  var delta;
+  var i = 0;
+
+  while(i < length) {
+    average1 = (input1[i*4] + input1[i*4+1] + input1[i*4+2]) / 2.5;
+    average2 = (input2[i*4] + input2[i*4+1] + input2[i*4+2]) / 2.5;
+    delta = polarize(abs(average1 - average2), 0x15);
+    output[i*4] = delta;
+    output[i*4+1] = delta;
+    output[i*4+2] = delta;
+    output[i*4+3] = 0xFF;
+    ++i;
+  }
+
+
+
 
 }
 
@@ -138,8 +170,17 @@ function polarize(value, threshold) {
   blend two consecutive frames
   returns imageData
 */
-function blend(canvas, width, height) {
-
+function blend(input, output) {
+  var inputCtx = input.getContext('2d');
+  var outputCtx = output.getContext('2d');
+  var width = input.width;
+  var height = input.height;
+  var sourceData = inputCtx.getImageData(0, 0, width, height);
+  prevSourceData = prevSourceData || inputCtx.getImageData(0, 0, width, height);
+  var blendData = inputCtx.createImageData(width, height);
+  compare(blendData.data, sourceData.data, prevSourceData.data);
+  outputCtx.putImageData(blendData, 0, 0);
+  prevSourceData = sourceData;
 }
 
 /*
@@ -164,23 +205,20 @@ function initializeVideo() {
 */
 function loop() {
   pipe(videoOutput, canvasOutput);
+  blend(canvasOutput, canvasBlend);
   requestAnimFrame(loop);
 }
 
 /*
   kickstart the process
-  returns undefined
 */
-function initialize() {
-  capture().then(
-    function(input) {
-      pipe(input, videoOutput);
-    }
-  ).catch(
-    function(error) {
-      console.error('Failed to draw camera input to video ', error);
-    }
-  );
-
-  loop();
-}
+capture().then(
+  function(input) {
+    pipe(input, videoOutput);
+    loop();
+  }
+).catch(
+  function(error) {
+    console.error('Failed to draw camera input to video ', error);
+  }
+);
