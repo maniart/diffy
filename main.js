@@ -109,6 +109,7 @@ function capture() {
   returns output
 */
 function pipe(input, output) {
+  /*TODO pipe needs to take in  function. refactor the api */
   if(typeof input === 'string' && typeof output === 'object') {
     // piping blob to video element
     output.src = input;
@@ -147,6 +148,7 @@ function compare(input1, input2) {
     .getImageData(0, 0, blendWidth, blendWidth);
   //var i = 0;
 
+  window.v = data1;
   var buf = new ArrayBuffer(data1.length);
   var buf8 = new Uint8ClampedArray(buf);
   var data = new Uint32Array(buf);
@@ -155,16 +157,17 @@ function compare(input1, input2) {
   for (var y = 0; y < blendHeight; ++y) {
     for (var x = 0; x < blendWidth; ++x) {
       i = y * blendWidth + x;
+
       average1 = (data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 2.5;
       average2 = (data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 2.5;
       delta = polarize(abs(average1 - average2), 0x15);
-      //var value = x * y & 0xff;
 
       data[i] =
           (255   << 24) |    // alpha
           (delta << 16) |    // blue
           (delta <<  8) |    // green
            delta;           // red
+      // if(i == 1000) { window.foo = data[i]; }
     }
   }
 
@@ -186,7 +189,7 @@ function abs(value) {
   returns 0 or 0XFF
 */
 function polarize(value, threshold) {
-  return (value > threshold) ? 0xFF : 0;
+  return (value > threshold) ? 0 : 0xFF;
 }
 
 /*
