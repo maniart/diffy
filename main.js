@@ -63,7 +63,11 @@ var constraints = {
 };
 
 /*
-  latest captured image data
+  last captured image data
+*/
+var sourceData;
+/*
+  next to last captured image data
 */
 var prevSourceData;
 
@@ -184,7 +188,7 @@ function blend(input, output) {
   var outputCtx = output.getContext('2d');
   var width = input.width;
   var height = input.height;
-  var sourceData = inputCtx.getImageData(0, 0, width, height);
+  sourceData = inputCtx.getImageData(0, 0, width, height);
   prevSourceData = prevSourceData || inputCtx.getImageData(0, 0, width, height);
   compare(sourceData, prevSourceData);
   //blendImageData.data.set(buf8);
@@ -237,6 +241,7 @@ capture().then(
       blendImageData.data.set(blendData);
       blendCtx.putImageData(blendImageData, 0, 0);
       //console.log(prevSourceData);
+      prevSourceData = sourceData;
       //prevSourceData = blendData;
     };
     pipe(input, videoOutput);
