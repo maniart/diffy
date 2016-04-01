@@ -14,7 +14,6 @@
     window.setTimeout(callback, 1000 / 60);
   };
 
-
 /*
   shim getUserMedia with a Promise api
   source: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
@@ -84,11 +83,33 @@ var canvasOutput = document.querySelector('#canvas-output');
 var canvasBlend = document.querySelector('#canvas-blend');
 
 /*
+  blend canvas 2d context
+*/
+var blendCtx = canvasBlend.getContext('2d');
+
+/*
+  is Worker available?
+*/
+var isWorkerAvailable = 'Worker' in window;
+
+var differ = new Worker('differ.js');
+
+var blendData;
+
+/*
+  TODO: refactor
+*/
+var buf;
+var buf8;
+/*
   TODO: refactor
 */
 var blendWidth = canvasBlend.width;
 var blendHeight = canvasBlend.height;
 
+var blendImageData = canvasBlend
+    .getContext('2d')
+    .getImageData(0, 0, blendWidth, blendWidth);
 
 /*
   capture from camera
@@ -143,53 +164,15 @@ function compare(input1, input2) {
   var average1;
   var average2;
   var delta;
-  var imageData = canvasBlend
-    .getContext('2d')
-    .getImageData(0, 0, blendWidth, blendWidth);
-  //var i = 0;
 
-  window.v = data1;
-  var buf = new ArrayBuffer(data1.length);
-  var buf8 = new Uint8ClampedArray(buf);
+  buf = new ArrayBuffer(data1.length);
+  buf8 = new Uint8ClampedArray(buf);
   var data = new Uint32Array(buf);
+  //console.log(data2);
+  differ.postMessage([buf, data1, data2, blendWidth, blendHeight]);
 
-  var i;
-  for (var y = 0; y < blendHeight; ++y) {
-    for (var x = 0; x < blendWidth; ++x) {
-      i = y * blendWidth + x;
+//  return imageData;
 
-      average1 = (data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 2.5;
-      average2 = (data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 2.5;
-      delta = polarize(abs(average1 - average2), 0x15);
-
-      data[i] =
-          (255   << 24) |    // alpha
-          (delta << 16) |    // blue
-          (delta <<  8) |    // green
-           delta;           // red
-      // if(i == 1000) { window.foo = data[i]; }
-    }
-  }
-
-  imageData.data.set(buf8);
-  return imageData;
-
-}
-
-/*
-  bitwise abs operation
-  returns value
-*/
-function abs(value) {
-  return (value ^ (value >> 31)) - (value >> 31);
-}
-
-/*
-  polarize pixel values based on value and threshold
-  returns 0 or 0XFF
-*/
-function polarize(value, threshold) {
-  return (value > threshold) ? 0 : 0xFF;
 }
 
 /*
@@ -203,9 +186,11 @@ function blend(input, output) {
   var height = input.height;
   var sourceData = inputCtx.getImageData(0, 0, width, height);
   prevSourceData = prevSourceData || inputCtx.getImageData(0, 0, width, height);
-  var blendData = compare(sourceData, prevSourceData);
-  outputCtx.putImageData(blendData, 0, 0);
-  prevSourceData = sourceData;
+  compare(sourceData, prevSourceData);
+  //blendImageData.data.set(buf8);
+
+  // outputCtx.putImageData(blendImageData, 0, 0);
+  //prevSourceData = sourceData;
 }
 
 /*
@@ -234,13 +219,29 @@ function loop() {
   requestAnimFrame(loop);
 }
 
+var times = 0;
+
 /*
   kickstart the process
 */
 capture().then(
   function(input) {
+    // order is important
+    differ.onmessage = function(event) {
+      if(times < 1) {
+        console.log('main thread - ', event.data);
+        times++;
+      }
+
+      blendData = new Uint8ClampedArray(event.data);
+      blendImageData.data.set(blendData);
+      blendCtx.putImageData(blendImageData, 0, 0);
+      //console.log(prevSourceData);
+      //prevSourceData = blendData;
+    };
     pipe(input, videoOutput);
     loop();
+
   }
 ).catch(
   function(error) {
