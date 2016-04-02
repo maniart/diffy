@@ -70,26 +70,26 @@ var constraints = {
 };
 
 /*
-  last captured image data
+  last captured imageData
 */
 var currentImageData;
 /*
-  next to last captured image data
+  previous captured imageData
 */
-var prevSourceData;
+var previousImageData;
 
 /*
-  video element rendering camera input
+  video element rendering raw camera input
 */
 var rawVideo = $('#raw-video');
 
 /*
-  canvas element rendering camera input
+  canvas element rendering raw camera input
 */
 var rawCanvas = $('#raw-canvas');
 
 /*
-  canvas element rendering blend
+  canvas element rendering blend image
 */
 var blendCanvas = $('#blend-canvas');
 
@@ -108,13 +108,25 @@ var isWorkerAvailable = 'Worker' in window;
 */
 var differ = new Worker('differ.js');
 
-var blendData;
+/*
+  counter used to log only once
+*/
+var times = 0;
 
 /*
-  TODO: refactor
+  utility function to log only once
 */
-var buffer;
-var buf8;
+function logOnce() {
+  if(times < 1) {
+    console
+      .log
+      .apply(console, arguments);
+    times ++;
+  }
+}
+
+
+
 /*
   TODO: refactor
 */
@@ -174,14 +186,9 @@ function compare(input1, input2) {
   // debugger;
   var length = input1.length;
   var data1 = input1.data;
-  var data2 = input2.data;
-  var average1;
-  var average2;
-  var delta;
+  var data2 = input2.data
+  var buffer = new ArrayBuffer(data1.length);
 
-  buffer = new ArrayBuffer(data1.length);
-  buf8 = new Uint8ClampedArray(buffer);
-  var data = new Uint32Array(buffer);
   //console.log(data2);
   differ.postMessage({
     buffer: buffer,
@@ -204,12 +211,8 @@ function blend(input, output) {
   var width = input.width;
   var height = input.height;
   currentImageData = inputCtx.getImageData(0, 0, width, height);
-  prevSourceData = prevSourceData || inputCtx.getImageData(0, 0, width, height);
-  compare(currentImageData, prevSourceData);
-  //blendImageData.data.set(buf8);
-
-  // outputCtx.putImageData(blendImageData, 0, 0);
-  //prevSourceData = currentImageData;
+  previousImageData = previousImageData || inputCtx.getImageData(0, 0, width, height);
+  compare(currentImageData, previousImageData);
 }
 
 /*
@@ -218,6 +221,21 @@ function blend(input, output) {
 */
 function center(canvas) {
 
+}
+
+/*
+  worker message event callback
+  draws pixel buffer to blend canvas
+*/
+function drawBlendImage(messageEvent) {
+  logOnce('main thread - ', messageEvent.data);
+  blendImageData
+    .data
+    .set(
+      new Uint8ClampedArray(messageEvent.data)
+    );
+  blendCtx.putImageData(blendImageData, 0, 0);
+  previousImageData = currentImageData;
 }
 
 /*
@@ -238,33 +256,20 @@ function loop() {
   requestAnimFrame(loop);
 }
 
-var times = 0;
-
 /*
   kickstart the process
 */
-capture().then(
-  function(input) {
-    // order is important
-    differ.onmessage = function(event) {
-      if(times < 1) {
-        console.log('main thread - ', event.data);
-        times++;
-      }
-
-      blendData = new Uint8ClampedArray(event.data);
-      blendImageData.data.set(blendData);
-      blendCtx.putImageData(blendImageData, 0, 0);
-      //console.log(prevSourceData);
-      prevSourceData = currentImageData;
-      //prevSourceData = blendData;
-    };
-    pipe(input, rawVideo);
-    loop();
-
-  }
-).catch(
-  function(error) {
-    console.error('Failed to draw camera input to video ', error);
-  }
-);
+capture()
+  .then(
+    function(input) {
+      // order is important
+      differ.addEventListener('message', drawBlendImage);
+      pipe(input, rawVideo);
+      loop();
+    }
+  )
+  .catch(
+    function(error) {
+      console.error('Failed to draw camera input to video ', error);
+    }
+  );
