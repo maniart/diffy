@@ -74,9 +74,10 @@ function createLogOnce() {
 }
 
 /*
-  logger instance
+  logger instances
 */
 var logOnce_1 = createLogOnce();
+var logOnce_2 = createLogOnce();
 
 /*
   constraints object for getUserMedia
@@ -107,6 +108,26 @@ var rawVideo = $('#raw-video');
   canvas element rendering raw camera input
 */
 var rawCanvas = $('#raw-canvas');
+
+/*
+  canvas containing the grid
+*/
+var gridCanvas = $('#grid-canvas');
+
+/*
+  grid canvas context
+*/
+var gridCtx = gridCanvas.getContext('2d');
+
+/*
+  width of grid canvas
+*/
+var gridWidth = gridCanvas.width;
+
+/*
+  height of grid canvas
+*/
+var gridHeight = gridCanvas.height;
 
 /*
   canvas element rendering blend image
@@ -142,6 +163,13 @@ var isWorkerAvailable = 'Worker' in window;
   Worker
 */
 var differ = new Worker('differ.js');
+
+/*
+  grid image resolution values
+*/
+var GRID_RESOLUTION_X = 14;
+var GRID_RESOLUTION_Y = 14;
+
 
 /*
   capture from camera
@@ -244,12 +272,70 @@ function drawBlendImage(messageEvent) {
 }
 
 /*
+  create and draw grid
+  returns ?
+*/
+function grid(resolutionX, resolutionY, threshold) {
+
+  var i;
+  var j;
+  var posX;
+  var posY;
+  var k = 0;
+  var cellWidth = gridWidth / resolutionX;
+  var cellHeight = gridHeight / resolutionY;
+  var cellImageData;
+  var cellImageDataLength;
+  var cellPixelCount;
+  var average = 0;
+
+  for(i = 0; i < blendWidth; i += cellWidth) {
+    for(j = 0; j < blendHeight; j += cellHeight) {
+      cellImageData = blendCtx.getImageData(i, j, cellWidth, cellHeight).data;
+      /*TODO refactor with bitshifting */
+      cellImageDataLength = cellImageData.length;
+      cellPixelCount = cellImageDataLength / 4;
+      while(k < cellPixelCount) {
+        average += (cellImageData[k * 4] + cellImageData[k * 4 + 1] + cellImageData[k * 4 + 2]) / 3;
+        ++k;
+      }
+      average = Math.round(average / cellPixelCount);
+      gridCtx.beginPath();
+      gridCtx.beginPath();
+      gridCtx.rect(i, j, cellWidth, cellHeight);
+      if(average > threshold) {
+
+
+        gridCtx.fillStyle = [
+          'rgb(',
+          average,
+          ',',
+          average,
+          ',',
+          average,
+          ')'
+        ].join('');
+        // logOnce_2('main thread: grid');
+      } else {
+        gridCtx.fillStyle = '#ffffff';
+      }
+      gridCtx.fill();
+      gridCtx.closePath();
+      average = 0;
+      k = 0;
+    }
+  }
+
+}
+
+/*
   iteratively calculate and draw
   returns undefined
 */
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
+  grid(GRID_RESOLUTION_X, GRID_RESOLUTION_Y, 50);
   requestAnimFrame(loop);
 }
 
