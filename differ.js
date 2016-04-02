@@ -34,16 +34,7 @@ function abs(value) {
   returns 0 or 0XFF
 */
 function polarize(value, threshold) {
-  var ret;
-  if(value > threshold * 2) {
-    ret = 0xFF0033;
-  } else if(value > threshold) {
-    ret = 0XFF59B2;
-  } else {
-    ret = 0XFF;
-  }
-  return ret;
-  // return (value > threshold) ? 0xFF0033 : 0XFF;
+  return (value > threshold) ? 0xFF0033 : 0XFF;
 }
 
 /*
@@ -61,8 +52,8 @@ function createDiffBuffer(messageEvent) {
   for (var y = 0; y < height; ++y) {
     for (var x = 0; x < width; ++x) {
       i = y * width + x
-      average1 = (data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 2.5;
-      average2 = (data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 2.5;
+      average1 = (data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 3;
+      average2 = (data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 3;
       delta = polarize(
         abs(average1 - average2), 0x15
       );

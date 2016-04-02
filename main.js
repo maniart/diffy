@@ -261,8 +261,7 @@ capture()
     function(input) {
       // order is important
       differ.addEventListener('message', drawBlendImage);
-      mirror(rawCanvas);
-      mirror(blendCanvas);
+      [rawCanvas, blendCanvas].forEach(mirror);
       pipe(input, rawVideo);
       loop();
     }
