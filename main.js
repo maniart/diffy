@@ -50,6 +50,13 @@ if(navigator.mediaDevices.getUserMedia === undefined) {
   navigator.mediaDevices.getUserMedia = getUserMedia;
 }
 
+/*
+  Utility for getting dom references
+  return DOM Object
+*/
+function $(selector) {
+  return document.querySelector(selector);
+}
 
 /*
   constraints object for getUserMedia
@@ -65,7 +72,7 @@ var constraints = {
 /*
   last captured image data
 */
-var sourceData;
+var currentImageData;
 /*
   next to last captured image data
 */
@@ -74,17 +81,17 @@ var prevSourceData;
 /*
   video element rendering camera input
 */
-var rawVideo = document.querySelector('#raw-video');
+var rawVideo = $('#raw-video');
 
 /*
   canvas element rendering camera input
 */
-var rawCanvas = document.querySelector('#raw-canvas');
+var rawCanvas = $('#raw-canvas');
 
 /*
   canvas element rendering blend
 */
-var blendCanvas = document.querySelector('#blend-canvas');
+var blendCanvas = $('#blend-canvas');
 
 /*
   blend canvas 2d context
@@ -96,6 +103,9 @@ var blendCtx = blendCanvas.getContext('2d');
 */
 var isWorkerAvailable = 'Worker' in window;
 
+/*
+  Worker
+*/
 var differ = new Worker('differ.js');
 
 var blendData;
@@ -103,7 +113,7 @@ var blendData;
 /*
   TODO: refactor
 */
-var buf;
+var buffer;
 var buf8;
 /*
   TODO: refactor
@@ -169,12 +179,17 @@ function compare(input1, input2) {
   var average2;
   var delta;
 
-  buf = new ArrayBuffer(data1.length);
-  buf8 = new Uint8ClampedArray(buf);
-  var data = new Uint32Array(buf);
+  buffer = new ArrayBuffer(data1.length);
+  buf8 = new Uint8ClampedArray(buffer);
+  var data = new Uint32Array(buffer);
   //console.log(data2);
-  differ.postMessage([buf, data1, data2, blendWidth, blendHeight]);
-
+  differ.postMessage({
+    buffer: buffer,
+    data1: data1,
+    data2: data2,
+    width: blendWidth,
+    height: blendHeight
+  });
 //  return imageData;
 
 }
@@ -188,13 +203,13 @@ function blend(input, output) {
   var outputCtx = output.getContext('2d');
   var width = input.width;
   var height = input.height;
-  sourceData = inputCtx.getImageData(0, 0, width, height);
+  currentImageData = inputCtx.getImageData(0, 0, width, height);
   prevSourceData = prevSourceData || inputCtx.getImageData(0, 0, width, height);
-  compare(sourceData, prevSourceData);
+  compare(currentImageData, prevSourceData);
   //blendImageData.data.set(buf8);
 
   // outputCtx.putImageData(blendImageData, 0, 0);
-  //prevSourceData = sourceData;
+  //prevSourceData = currentImageData;
 }
 
 /*
@@ -241,7 +256,7 @@ capture().then(
       blendImageData.data.set(blendData);
       blendCtx.putImageData(blendImageData, 0, 0);
       //console.log(prevSourceData);
-      prevSourceData = sourceData;
+      prevSourceData = currentImageData;
       //prevSourceData = blendData;
     };
     pipe(input, rawVideo);

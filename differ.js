@@ -1,5 +1,6 @@
 var times = 0;
-var buf;
+var messageData;
+var buffer;
 var data;
 var data1;
 var data2;
@@ -23,21 +24,23 @@ function polarize(value, threshold) {
 }
 
 this.onmessage = function(event) {
-  // debugger;
-  if(times < 2) {
-    console.log(event);
+  var i;
+
+  // log event once
+  if(times < 1) {
+    console.debug('differ: event -', event);
     times++;
   }
 
-  buf = event.data[0];
-  data = new Uint32Array(buf);
-  data1 = event.data[1];
-  data2 = event.data[2];
-  width = event.data[3];
-  height = event.data[4];
+  messageData = event.data;
+  buffer = messageData.buffer;
+  data1 = messageData.data1;
+  data2 = messageData.data2;
+  width = messageData.width;
+  height = messageData.height;
+  data = new Uint32Array(buffer);
 
-  var i;
-  //console.log(data2);
+
 
 
   for (var y = 0; y < height; ++y) {
@@ -59,6 +62,6 @@ this.onmessage = function(event) {
     }
   }
 
-  this.postMessage(buf);
+  this.postMessage(buffer);
 
 };
