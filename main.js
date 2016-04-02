@@ -74,22 +74,22 @@ var prevSourceData;
 /*
   video element rendering camera input
 */
-var videoOutput = document.querySelector('#video-output');
+var rawVideo = document.querySelector('#raw-video');
 
 /*
   canvas element rendering camera input
 */
-var canvasOutput = document.querySelector('#canvas-output');
+var rawCanvas = document.querySelector('#raw-canvas');
 
 /*
   canvas element rendering blend
 */
-var canvasBlend = document.querySelector('#canvas-blend');
+var blendCanvas = document.querySelector('#blend-canvas');
 
 /*
   blend canvas 2d context
 */
-var blendCtx = canvasBlend.getContext('2d');
+var blendCtx = blendCanvas.getContext('2d');
 
 /*
   is Worker available?
@@ -108,10 +108,10 @@ var buf8;
 /*
   TODO: refactor
 */
-var blendWidth = canvasBlend.width;
-var blendHeight = canvasBlend.height;
+var blendWidth = blendCanvas.width;
+var blendHeight = blendCanvas.height;
 
-var blendImageData = canvasBlend
+var blendImageData = blendCanvas
     .getContext('2d')
     .getImageData(0, 0, blendWidth, blendWidth);
 
@@ -218,8 +218,8 @@ function initializeVideo() {
   returns undefined
 */
 function loop() {
-  pipe(videoOutput, canvasOutput);
-  blend(canvasOutput, canvasBlend);
+  pipe(rawVideo, rawCanvas);
+  blend(rawCanvas, blendCanvas);
   requestAnimFrame(loop);
 }
 
@@ -244,7 +244,7 @@ capture().then(
       prevSourceData = sourceData;
       //prevSourceData = blendData;
     };
-    pipe(input, videoOutput);
+    pipe(input, rawVideo);
     loop();
 
   }

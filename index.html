@@ -7,30 +7,34 @@
           margin: 0;
           padding: 0;
         }
+        #raw-video {
+          display: none;
+        }
     </style>
     <title>Diffy 0.1</title>
 </head>
 <body>
 
   <video
-    id="video-output"
+    id="raw-video"
     autoplay
     width="520"
     height="400">
   </video>
 
   <canvas
-    id="canvas-output"
+    id="raw-canvas"
     width="520"
     height="400">
   </canvas>
 
   <canvas
-    id="canvas-blend"
+    id="blend-canvas"
     width="520"
     height="400">
   </canvas>
 
   <script src="main.js"></script>
+
 </body>
 </html>
