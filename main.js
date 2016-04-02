@@ -59,6 +59,26 @@ function $(selector) {
 }
 
 /*
+  utility function to log only once
+*/
+function createLogOnce() {
+  var counter = 0;
+  return function logOnce() {
+    if(counter < 1) {
+      console
+        .log
+        .apply(console, arguments);
+      counter ++;
+    }
+  }
+}
+
+/*
+  logger instance
+*/
+var logOnce_1 = createLogOnce();
+
+/*
   constraints object for getUserMedia
 */
 var constraints = {
@@ -99,6 +119,21 @@ var blendCanvas = $('#blend-canvas');
 var blendCtx = blendCanvas.getContext('2d');
 
 /*
+  width of blend canvas
+*/
+var blendWidth = blendCanvas.width;
+
+/*
+  height of blend canvas
+*/
+var blendHeight = blendCanvas.height;
+
+/*
+  blend imageData
+*/
+var blendImageData = blendCtx.getImageData(0, 0, blendWidth, blendHeight);
+
+/*
   is Worker available?
 */
 var isWorkerAvailable = 'Worker' in window;
@@ -107,35 +142,6 @@ var isWorkerAvailable = 'Worker' in window;
   Worker
 */
 var differ = new Worker('differ.js');
-
-/*
-  counter used to log only once
-*/
-var times = 0;
-
-/*
-  utility function to log only once
-*/
-function logOnce() {
-  if(times < 1) {
-    console
-      .log
-      .apply(console, arguments);
-    times ++;
-  }
-}
-
-
-
-/*
-  TODO: refactor
-*/
-var blendWidth = blendCanvas.width;
-var blendHeight = blendCanvas.height;
-
-var blendImageData = blendCanvas
-    .getContext('2d')
-    .getImageData(0, 0, blendWidth, blendWidth);
 
 /*
   capture from camera
@@ -175,7 +181,10 @@ function pipe(input, output) {
   returns canvas
 */
 function mirror(canvas) {
-
+  var ctx = canvas.getContext('2d');
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+  return canvas;
 }
 
 /*
@@ -183,13 +192,11 @@ function mirror(canvas) {
   returns ?
 */
 function compare(input1, input2) {
-  // debugger;
   var length = input1.length;
   var data1 = input1.data;
   var data2 = input2.data
   var buffer = new ArrayBuffer(data1.length);
 
-  //console.log(data2);
   differ.postMessage({
     buffer: buffer,
     data1: data1,
@@ -197,8 +204,6 @@ function compare(input1, input2) {
     width: blendWidth,
     height: blendHeight
   });
-//  return imageData;
-
 }
 
 /*
@@ -228,7 +233,7 @@ function center(canvas) {
   draws pixel buffer to blend canvas
 */
 function drawBlendImage(messageEvent) {
-  logOnce('main thread - ', messageEvent.data);
+  logOnce_1('main thread - ', messageEvent.data);
   blendImageData
     .data
     .set(
@@ -236,14 +241,6 @@ function drawBlendImage(messageEvent) {
     );
   blendCtx.putImageData(blendImageData, 0, 0);
   previousImageData = currentImageData;
-}
-
-/*
-  initialize video capture
-  returns promise
-*/
-function initializeVideo() {
-
 }
 
 /*
@@ -264,6 +261,8 @@ capture()
     function(input) {
       // order is important
       differ.addEventListener('message', drawBlendImage);
+      mirror(rawCanvas);
+      mirror(blendCanvas);
       pipe(input, rawVideo);
       loop();
     }
