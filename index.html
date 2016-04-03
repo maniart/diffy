@@ -8,10 +8,18 @@
           padding: 0;
         }
         #raw-video {
-          display: none;
+          /*display: none;*/
+          float: left;
+          clear: both;
         }
         #raw-canvas {
-          display: none;
+          /*display: none;*/
+          clear: both;
+          float: left;
+        }
+        #blend-canvas {
+          clear: both;
+          float: left;
         }
     </style>
     <title>Diffy 0.1</title>
@@ -21,20 +29,20 @@
   <video
     id="raw-video"
     autoplay
-    width="520"
-    height="400">
+    width="130"
+    height="100">
   </video>
 
   <canvas
     id="raw-canvas"
-    width="520"
-    height="400">
+    width="130"
+    height="100">
   </canvas>
 
   <canvas
     id="blend-canvas"
-    width="520"
-    height="400">
+    width="130"
+    height="100">
   </canvas>
 
   <canvas
