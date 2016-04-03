@@ -167,8 +167,10 @@ var differ = new Worker('differ.js');
 /*
   grid image resolution values
 */
-var GRID_RESOLUTION_X = 14;
-var GRID_RESOLUTION_Y = 14;
+var GRID_RESOLUTION_X = 10;
+var GRID_RESOLUTION_Y = 10;
+
+
 
 
 /*
@@ -257,6 +259,14 @@ function center(canvas) {
 }
 
 /*
+  bitwise Math.round
+  returns number
+*/
+function round(number) {
+  return (number + .5) >> 0;
+}
+
+/*
   worker message event callback
   draws pixel buffer to blend canvas
 */
@@ -276,7 +286,6 @@ function drawBlendImage(messageEvent) {
   returns ?
 */
 function grid(resolutionX, resolutionY, threshold) {
-
   var i;
   var j;
   var posX;
@@ -292,6 +301,7 @@ function grid(resolutionX, resolutionY, threshold) {
   for(i = 0; i < blendWidth; i += cellWidth) {
     for(j = 0; j < blendHeight; j += cellHeight) {
       cellImageData = blendCtx.getImageData(i, j, cellWidth, cellHeight).data;
+      logOnce_2('cell image data: ', cellImageData);
       /*TODO refactor with bitshifting */
       cellImageDataLength = cellImageData.length;
       cellPixelCount = cellImageDataLength / 4;
@@ -299,13 +309,11 @@ function grid(resolutionX, resolutionY, threshold) {
         average += (cellImageData[k * 4] + cellImageData[k * 4 + 1] + cellImageData[k * 4 + 2]) / 3;
         ++k;
       }
-      average = Math.round(average / cellPixelCount);
-      gridCtx.beginPath();
+      average = round(average / cellPixelCount);
       gridCtx.beginPath();
       gridCtx.rect(i, j, cellWidth, cellHeight);
+      //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
       if(average > threshold) {
-
-
         gridCtx.fillStyle = [
           'rgb(',
           average,
@@ -315,7 +323,6 @@ function grid(resolutionX, resolutionY, threshold) {
           average,
           ')'
         ].join('');
-        // logOnce_2('main thread: grid');
       } else {
         gridCtx.fillStyle = '#ffffff';
       }
