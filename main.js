@@ -171,6 +171,8 @@ var GRID_RESOLUTION_X = 10;
 var GRID_RESOLUTION_Y = 10;
 
 
+
+
 /*
   capture from camera
   returns objectUrl
@@ -257,6 +259,14 @@ function center(canvas) {
 }
 
 /*
+  bitwise Math.round
+  returns number
+*/
+function round(number) {
+  return (number + .5) >> 0;
+}
+
+/*
   worker message event callback
   draws pixel buffer to blend canvas
 */
@@ -276,7 +286,6 @@ function drawBlendImage(messageEvent) {
   returns ?
 */
 function grid(resolutionX, resolutionY, threshold) {
-
   var i;
   var j;
   var posX;
@@ -300,7 +309,7 @@ function grid(resolutionX, resolutionY, threshold) {
         average += (cellImageData[k * 4] + cellImageData[k * 4 + 1] + cellImageData[k * 4 + 2]) / 3;
         ++k;
       }
-      average = Math.round(average / cellPixelCount);
+      average = round(average / cellPixelCount);
       gridCtx.beginPath();
       gridCtx.rect(i, j, cellWidth, cellHeight);
       //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
