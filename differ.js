@@ -16,8 +16,8 @@ function createLogOnce() {
       console
         .log
         .apply(console, arguments);
-      counter ++;
     }
+    counter ++;
   }
 }
 
