@@ -167,8 +167,8 @@ var differ = new Worker('differ.js');
 /*
   grid image resolution values
 */
-var GRID_RESOLUTION_X = 10;
-var GRID_RESOLUTION_Y = 10;
+var GRID_RESOLUTION_X = 200;
+var GRID_RESOLUTION_Y = 200;
 
 /*
   capture from camera
@@ -248,6 +248,63 @@ function blend(input, output) {
 }
 
 /*
+  create a matrix
+*/
+function matrix(resolutionX, resolutionY, threshold) {
+  var matrix = [];
+  var i;
+  var j;
+  var posX;
+  var posY;
+  var k = 0;
+  var cellWidth = gridWidth / resolutionX;
+  var cellHeight = gridHeight / resolutionY;
+  var cellImageData;
+  var cellImageDataLength;
+  var cellPixelCount;
+  var average = 0;
+
+  for(i = 0; i < blendWidth; i += cellWidth) {
+    var row = [];
+    for(j = 0; j < blendHeight; j += cellHeight) {
+      cellImageData = blendCtx.getImageData(i, j, cellWidth, cellHeight).data;
+      // logOnce_2('cell image data: ', cellImageData);
+      /*TODO refactor with bitshifting */
+      cellImageDataLength = cellImageData.length;
+      cellPixelCount = cellImageDataLength / 4;
+      while(k < cellPixelCount) {
+        average += (cellImageData[k * 4] + cellImageData[k * 4 + 1] + cellImageData[k * 4 + 2]) / 3;
+        ++k;
+      }
+      average = round(average / cellPixelCount);
+      // gridCtx.beginPath();
+      // gridCtx.rect(i, j, cellWidth * 4, cellHeight * 4);
+      //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
+      /* push the value in the row */
+      row.push(average > threshold ? average : '#ffffff');
+      average = 0;
+      k = 0;
+    }
+    matrix.push(row); // store the row in matrix
+  }
+  logOnce_2(matrix);
+}
+
+/*
+  scale a matrix
+*/
+function scale(matrix, scale) {
+
+}
+
+/*
+  draw a matrix
+*/
+function draw(matrix, output) {
+
+}
+
+/*
   center the canvas
   returns canvas
 */
@@ -279,67 +336,13 @@ function drawBlendImage(messageEvent) {
 }
 
 /*
-  create and draw grid
-  returns ?
-*/
-function grid(resolutionX, resolutionY, threshold) {
-  var i;
-  var j;
-  var posX;
-  var posY;
-  var k = 0;
-  var cellWidth = gridWidth / resolutionX;
-  var cellHeight = gridHeight / resolutionY;
-  var cellImageData;
-  var cellImageDataLength;
-  var cellPixelCount;
-  var average = 0;
-
-  for(i = 0; i < blendWidth; i += cellWidth) {
-    for(j = 0; j < blendHeight; j += cellHeight) {
-      cellImageData = blendCtx.getImageData(i, j, cellWidth, cellHeight).data;
-      logOnce_2('cell image data: ', cellImageData);
-      /*TODO refactor with bitshifting */
-      cellImageDataLength = cellImageData.length;
-      cellPixelCount = cellImageDataLength / 4;
-      while(k < cellPixelCount) {
-        average += (cellImageData[k * 4] + cellImageData[k * 4 + 1] + cellImageData[k * 4 + 2]) / 3;
-        ++k;
-      }
-      average = round(average / cellPixelCount);
-      gridCtx.beginPath();
-      gridCtx.rect(i, j, cellWidth, cellHeight);
-      //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
-      if(average > threshold) {
-        gridCtx.fillStyle = [
-          'rgb(',
-          average,
-          ',',
-          average,
-          ',',
-          average,
-          ')'
-        ].join('');
-      } else {
-        gridCtx.fillStyle = '#ffffff';
-      }
-      gridCtx.fill();
-      gridCtx.closePath();
-      average = 0;
-      k = 0;
-    }
-  }
-
-}
-
-/*
   iteratively calculate and draw
   returns undefined
 */
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  grid(GRID_RESOLUTION_X, GRID_RESOLUTION_Y, 50);
+  matrix(GRID_RESOLUTION_X, GRID_RESOLUTION_Y, 50);
   requestAnimFrame(loop);
 }
 
