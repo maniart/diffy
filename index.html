@@ -6,41 +6,85 @@
         html, body {
           margin: 0;
           padding: 0;
+          -moz-box-sizing: border-box;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
         }
         #raw-video {
-          display: none;
+          /*display: none;*/
+          float: left;
+          clear: both;
         }
         #raw-canvas {
+          /*display: none;*/
+          clear: both;
+          float: left;
+        }
+        #blend-canvas {
+          clear: both;
+          float: left;
+        }
+        #container {
+          position: absolute;
+          left: 0;
+          top: 0;
+          z-index: 9;
+        }
+        .hidden {
           display: none;
+        }
+        #toggle {
+            background-color: white;
+            outline: none;
+            width: 30px;
+            height: 30px;
+            padding: 3px;
+            color: black;
+            position: absolute;
+            text-align: center;
+            font-size: 20px;
+            line-height: 1.6;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            text-decoration: none;
         }
     </style>
     <title>Diffy 0.1</title>
 </head>
 <body>
 
-  <video
-    id="raw-video"
-    autoplay
-    width="520"
-    height="400">
-  </video>
+  <a
+    href="#"
+    id="toggle">
+    -
+  </a>
 
-  <canvas
-    id="raw-canvas"
-    width="520"
-    height="400">
-  </canvas>
+  <div id="container">
+    <video
+      id="raw-video"
+      autoplay
+      width="130"
+      height="100">
+    </video>
 
-  <canvas
-    id="blend-canvas"
-    width="520"
-    height="400">
-  </canvas>
+    <canvas
+      id="raw-canvas"
+      width="130"
+      height="100">
+    </canvas>
+
+    <canvas
+      id="blend-canvas"
+      width="130"
+      height="100">
+    </canvas>
+  </div>
 
   <canvas
     id="grid-canvas"
-    width="520"
-    height="400">
+    width="1040"
+    height="800">
   </canvas>
 
   <script src="main.js"></script>
