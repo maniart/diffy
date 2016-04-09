@@ -166,10 +166,15 @@ var isWorkerAvailable = 'Worker' in window;
 var differ = new Worker('differ.js');
 
 /*
+  Save a reference to Math.PI
+*/
+var PI = Math.PI;
+
+/*
   grid image resolution values
 */
-var GRID_RESOLUTION_X = 20;
-var GRID_RESOLUTION_Y = 20;
+var GRID_RESOLUTION_X = 80;
+var GRID_RESOLUTION_Y = 80;
 
 /*
   grid cell resolution
@@ -235,7 +240,7 @@ function compare(input1, input2) {
     buffer: buffer,
     data1: data1,
     data2: data2,
-    sensitivity: 2,
+    sensitivity: .5,
     width: blendWidth,
     height: blendHeight
   });
@@ -258,7 +263,7 @@ function blend(input, output) {
 /*
   create a matrix
 */
-function matrix(threshold) {
+function matrix() {
   var matrix = [];
   var i;
   var j;
@@ -299,14 +304,35 @@ function matrix(threshold) {
 }
 
 /*
-  draw a matrix
+  draw a matrix as a pixelated image
 */
-function drawGrid(matrix) {
+function drawPixels(matrix) {
   matrix.forEach(function(row, rowIdx) {
     row.forEach(function(column, colIdx) {
       gridCtx.beginPath();
       gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
       gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+      gridCtx.closePath();
+    });
+  });
+}
+
+/*
+  draw a matrix as hit points
+*/
+function drawGrid(matrix) {
+  // var color;
+  matrix.forEach(function(row, rowIdx) {
+    row.forEach(function(column, colIdx) {
+      // color = column < 200 ? 0 : 255;
+      gridCtx.beginPath();
+      gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
+      // gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 2, 2);
+      gridCtx.arc(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 1, 0, 2 * PI, false);
+      gridCtx.fill();
+      //gridCtx.lineWidth = 1;
+      //gridCtx.strokeStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
+      //gridCtx.stroke();
       gridCtx.closePath();
     });
   });
@@ -351,9 +377,11 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  drawGrid(
-    matrix(GRID_RESOLUTION_X, GRID_RESOLUTION_Y, 50)
-  );
+  // drawPixels(
+  //   matrix(150)
+  // );
+
+  drawGrid(matrix());
 
   requestAnimFrame(loop);
 }

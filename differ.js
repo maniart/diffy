@@ -54,8 +54,8 @@ function createDiffBuffer(messageEvent) {
   for (var y = 0; y < height; ++y) {
     for (var x = 0; x < width; ++x) {
       i = y * width + x
-      average1 = ((data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 1) / sensitivity;
-      average2 = ((data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 1) / sensitivity;
+      average1 = ((data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 3) / sensitivity;
+      average2 = ((data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 3) / sensitivity;
       delta = polarize(
         abs(average1 - average2), 0x15
       );
