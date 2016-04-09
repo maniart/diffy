@@ -168,14 +168,14 @@ var differ = new Worker('differ.js');
 /*
   grid image resolution values
 */
-var GRID_RESOLUTION_X = 20;
-var GRID_RESOLUTION_Y = 20;
+var GRID_RESOLUTION_X = 40;
+var GRID_RESOLUTION_Y = 40;
 
 /*
   grid cell resolution
 */
 var CELL_WIDTH = gridWidth / GRID_RESOLUTION_X;
-var CELL_HEIGHT = gridWidth / GRID_RESOLUTION_Y;
+var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
 
 /*
   capture from camera
@@ -257,20 +257,15 @@ function blend(input, output) {
 /*
   create a matrix
 */
-function matrix(resolutionX, resolutionY, threshold) {
+function matrix(threshold) {
   var matrix = [];
   var i;
   var j;
   var posX;
   var posY;
   var k = 0;
-  var cellWidth = gridWidth / resolutionX;
-
-
-
-  var cellHeight = gridHeight / resolutionY;
-
-
+  var cellWidth = blendWidth / GRID_RESOLUTION_X;
+  var cellHeight = blendHeight / GRID_RESOLUTION_Y
   var cellImageData;
   var cellImageDataLength;
   var cellPixelCount;
@@ -320,6 +315,7 @@ function draw(matrix) {
       // console.log(column);
       gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
       gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+      console.log(rowIdx * CELL_WIDTH);
       // gridCtx.fillRect(rowIdx * GRID_RESOLUTION_X, colIdx * GRID_RESOLUTION_Y, 3, 3);
       //gridCtx.arc(rowIdx, colIdx, cellWidth/3, 0, 2 * Math.PI, false);
       gridCtx.closePath();
