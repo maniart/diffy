@@ -35,7 +35,7 @@ function abs(value) {
   returns 0 or 0XFF
 */
 function polarize(value, threshold) {
-  return (value > threshold) ? 0xFF0033 : 0XFF;
+  return (value > threshold) ? 0 : 0XFF;
 }
 
 /*

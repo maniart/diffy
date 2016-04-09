@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="bower_components/pixi/pixi.js"></script>
     <style type="text/css">
         html, body {
           margin: 0;
@@ -10,19 +11,11 @@
           -webkit-box-sizing: border-box;
           box-sizing: border-box;
         }
-        #raw-video {
-          /*display: none;*/
-          float: left;
-          clear: both;
-        }
-        #raw-canvas {
-          /*display: none;*/
-          clear: both;
-          float: left;
-        }
+        #raw-video,
+        #raw-canvas,
         #blend-canvas {
-          clear: both;
           float: left;
+          clear: both;
         }
         #container {
           position: absolute;

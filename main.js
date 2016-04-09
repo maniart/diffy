@@ -266,7 +266,7 @@ function compare(input1, input2) {
     buffer: buffer,
     data1: data1,
     data2: data2,
-    sensitivity: .5,
+    sensitivity: 2,
     width: blendWidth,
     height: blendHeight
   });
