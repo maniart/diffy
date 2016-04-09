@@ -5,6 +5,7 @@ var data1;
 var data2;
 var width;
 var height;
+var sensitivity;
 
 /*
   utility function to log only once
@@ -48,12 +49,13 @@ function createDiffBuffer(messageEvent) {
   data2 = messageData.data2;
   width = messageData.width;
   height = messageData.height;
+  sensitivity = messageData.sensitivity;
   data = new Uint32Array(buffer);
   for (var y = 0; y < height; ++y) {
     for (var x = 0; x < width; ++x) {
       i = y * width + x
-      average1 = (data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 3;
-      average2 = (data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 3;
+      average1 = ((data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 1) / sensitivity;
+      average2 = ((data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 1) / sensitivity;
       delta = polarize(
         abs(average1 - average2), 0x15
       );

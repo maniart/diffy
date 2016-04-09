@@ -235,6 +235,7 @@ function compare(input1, input2) {
     buffer: buffer,
     data1: data1,
     data2: data2,
+    sensitivity: 2,
     width: blendWidth,
     height: blendHeight
   });
@@ -300,7 +301,7 @@ function matrix(threshold) {
 /*
   draw a matrix
 */
-function draw(matrix) {
+function drawGrid(matrix) {
   matrix.forEach(function(row, rowIdx) {
     row.forEach(function(column, colIdx) {
       gridCtx.beginPath();
@@ -350,7 +351,7 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  draw(
+  drawGrid(
     matrix(GRID_RESOLUTION_X, GRID_RESOLUTION_Y, 50)
   );
 
