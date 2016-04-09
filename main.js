@@ -78,6 +78,7 @@ function createLogOnce() {
 */
 var logOnce_1 = createLogOnce();
 var logOnce_2 = createLogOnce();
+var logOnce_3 = createLogOnce();
 
 /*
   constraints object for getUserMedia
@@ -85,8 +86,8 @@ var logOnce_2 = createLogOnce();
 var constraints = {
   audio: false,
   video: {
-    width: 1280,
-    height: 720
+    width: 260,
+    height: 200
   }
 };
 
@@ -167,8 +168,14 @@ var differ = new Worker('differ.js');
 /*
   grid image resolution values
 */
-var GRID_RESOLUTION_X = 200;
-var GRID_RESOLUTION_Y = 200;
+var GRID_RESOLUTION_X = 20;
+var GRID_RESOLUTION_Y = 20;
+
+/*
+  grid cell resolution
+*/
+var CELL_WIDTH = gridWidth / GRID_RESOLUTION_X;
+var CELL_HEIGHT = gridWidth / GRID_RESOLUTION_Y;
 
 /*
   capture from camera
@@ -258,7 +265,12 @@ function matrix(resolutionX, resolutionY, threshold) {
   var posY;
   var k = 0;
   var cellWidth = gridWidth / resolutionX;
+
+
+
   var cellHeight = gridHeight / resolutionY;
+
+
   var cellImageData;
   var cellImageDataLength;
   var cellPixelCount;
@@ -268,7 +280,7 @@ function matrix(resolutionX, resolutionY, threshold) {
     var row = [];
     for(j = 0; j < blendHeight; j += cellHeight) {
       cellImageData = blendCtx.getImageData(i, j, cellWidth, cellHeight).data;
-      // logOnce_2('cell image data: ', cellImageData);
+      // logOnce_2('- ', cellImageData.length);
       /*TODO refactor with bitshifting */
       cellImageDataLength = cellImageData.length;
       cellPixelCount = cellImageDataLength / 4;
@@ -281,13 +293,14 @@ function matrix(resolutionX, resolutionY, threshold) {
       // gridCtx.rect(i, j, cellWidth * 4, cellHeight * 4);
       //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
       /* push the value in the row */
-      row.push(average > threshold ? average : '#ffffff');
+      row.push(average  );
       average = 0;
       k = 0;
     }
     matrix.push(row); // store the row in matrix
   }
-  logOnce_2(matrix);
+  // logOnce_2(average);
+  return matrix;
 }
 
 /*
@@ -300,8 +313,18 @@ function scale(matrix, scale) {
 /*
   draw a matrix
 */
-function draw(matrix, output) {
-
+function draw(matrix) {
+  matrix.forEach(function(row, rowIdx) {
+    row.forEach(function(column, colIdx) {
+      gridCtx.beginPath();
+      // console.log(column);
+      gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
+      gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+      // gridCtx.fillRect(rowIdx * GRID_RESOLUTION_X, colIdx * GRID_RESOLUTION_Y, 3, 3);
+      //gridCtx.arc(rowIdx, colIdx, cellWidth/3, 0, 2 * Math.PI, false);
+      gridCtx.closePath();
+    });
+  })
 }
 
 /*
@@ -331,6 +354,7 @@ function drawBlendImage(messageEvent) {
     .set(
       new Uint8ClampedArray(messageEvent.data)
     );
+
   blendCtx.putImageData(blendImageData, 0, 0);
   previousImageData = currentImageData;
 }
@@ -342,7 +366,10 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  matrix(GRID_RESOLUTION_X, GRID_RESOLUTION_Y, 50);
+  draw(
+    matrix(GRID_RESOLUTION_X, GRID_RESOLUTION_Y, 50)
+  );
+
   requestAnimFrame(loop);
 }
 
