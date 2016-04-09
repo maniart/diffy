@@ -101,6 +101,16 @@ var currentImageData;
 var previousImageData;
 
 /*
+  debug image container
+*/
+var container = $('#container');
+
+/*
+  toggle raw and blend video
+*/
+var toggleBtn = $('#toggle');
+
+/*
   video element rendering raw camera input
 */
 var rawVideo = $('#raw-video');
@@ -181,6 +191,22 @@ var GRID_RESOLUTION_Y = 80;
 */
 var CELL_WIDTH = gridWidth / GRID_RESOLUTION_X;
 var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
+
+
+/*
+  toggle the raw videos. callback for `toggleBtn` click
+*/
+function toggle(event) {
+  event.preventDefault
+  if(container.classList.contains('hidden')) {
+    container.classList.remove('hidden');
+    toggleBtn.textContent = '-';
+  } else {
+    container.classList.add('hidden');
+    toggleBtn.textContent = '+';
+  }
+
+}
 
 /*
   capture from camera
@@ -394,9 +420,11 @@ capture()
     function(input) {
       // order is important
       differ.addEventListener('message', drawBlendImage);
+      toggleBtn.addEventListener('click', toggle);
       [rawCanvas, blendCanvas].forEach(mirror);
       pipe(input, rawVideo);
       loop();
+
     }
   )
   .catch(
