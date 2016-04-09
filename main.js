@@ -168,8 +168,8 @@ var differ = new Worker('differ.js');
 /*
   grid image resolution values
 */
-var GRID_RESOLUTION_X = 40;
-var GRID_RESOLUTION_Y = 40;
+var GRID_RESOLUTION_X = 20;
+var GRID_RESOLUTION_Y = 20;
 
 /*
   grid cell resolution
@@ -275,7 +275,6 @@ function matrix(threshold) {
     var row = [];
     for(j = 0; j < blendHeight; j += cellHeight) {
       cellImageData = blendCtx.getImageData(i, j, cellWidth, cellHeight).data;
-      // logOnce_2('- ', cellImageData.length);
       /*TODO refactor with bitshifting */
       cellImageDataLength = cellImageData.length;
       cellPixelCount = cellImageDataLength / 4;
@@ -294,15 +293,8 @@ function matrix(threshold) {
     }
     matrix.push(row); // store the row in matrix
   }
-  // logOnce_2(average);
+
   return matrix;
-}
-
-/*
-  scale a matrix
-*/
-function scale(matrix, scale) {
-
 }
 
 /*
@@ -312,15 +304,11 @@ function draw(matrix) {
   matrix.forEach(function(row, rowIdx) {
     row.forEach(function(column, colIdx) {
       gridCtx.beginPath();
-      // console.log(column);
       gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
       gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
-      console.log(rowIdx * CELL_WIDTH);
-      // gridCtx.fillRect(rowIdx * GRID_RESOLUTION_X, colIdx * GRID_RESOLUTION_Y, 3, 3);
-      //gridCtx.arc(rowIdx, colIdx, cellWidth/3, 0, 2 * Math.PI, false);
       gridCtx.closePath();
     });
-  })
+  });
 }
 
 /*
