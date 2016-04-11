@@ -121,26 +121,6 @@ var rawVideo = $('#raw-video');
 var rawCanvas = $('#raw-canvas');
 
 /*
-  canvas containing the grid
-*/
-var gridCanvas = $('#grid-canvas');
-
-/*
-  grid canvas context
-*/
-var gridCtx = gridCanvas.getContext('2d');
-
-/*
-  width of grid canvas
-*/
-var gridWidth = gridCanvas.width;
-
-/*
-  height of grid canvas
-*/
-var gridHeight = gridCanvas.height;
-
-/*
   canvas element rendering blend image
 */
 var blendCanvas = $('#blend-canvas');
@@ -166,6 +146,34 @@ var blendHeight = blendCanvas.height;
 var blendImageData = blendCtx.getImageData(0, 0, blendWidth, blendHeight);
 
 /*
+  PIXI.js scene dimensions
+*/
+var RENDERER_WIDTH = 130;
+var RENDERER_HEIGHT = 100;
+
+/*
+  PIXI stage
+*/
+var stage = new PIXI.Container();
+
+/*
+  PIXI renderer
+*/
+var renderer = new PIXI.WebGLRenderer(RENDERER_WIDTH, RENDERER_HEIGHT);
+
+/*
+  make renderer view display block
+*/
+renderer.view.style.display = 'block';
+renderer.view.style.left = '130px';
+renderer.view.style.position = 'absolute';
+
+/*
+  append renderer view to body
+*/
+document.body.appendChild(renderer.view);
+
+/*
   is Worker available?
 */
 var isWorkerAvailable = 'Worker' in window;
@@ -187,17 +195,10 @@ var GRID_RESOLUTION_X = 80;
 var GRID_RESOLUTION_Y = 80;
 
 /*
-  grid cell resolution
-*/
-var CELL_WIDTH = gridWidth / GRID_RESOLUTION_X;
-var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
-
-
-/*
   toggle the raw videos. callback for `toggleBtn` click
 */
 function toggle(event) {
-  event.preventDefault
+  event.preventDefault();
   if(container.classList.contains('hidden')) {
     container.classList.remove('hidden');
     toggleBtn.textContent = '-';
@@ -315,11 +316,8 @@ function matrix() {
         ++k;
       }
       average = round(average / cellPixelCount);
-      // gridCtx.beginPath();
-      // gridCtx.rect(i, j, cellWidth * 4, cellHeight * 4);
-      //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
       /* push the value in the row */
-      row.push(average  );
+      row.push(average);
       average = 0;
       k = 0;
     }
@@ -330,47 +328,25 @@ function matrix() {
 }
 
 /*
-  draw a matrix as a pixelated image
+  Draw!
+  returns ?
 */
-function drawPixels(matrix) {
-  matrix.forEach(function(row, rowIdx) {
-    row.forEach(function(column, colIdx) {
-      gridCtx.beginPath();
-      gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
-      gridCtx.closePath();
+function draw(matrix) {
+  // debugger;
+  /*
+    set shape properties
+  */
+  matrix.forEach(function(row, rowIndex) {
+    row.forEach(function(column, columnIndex) {
+
+
+
+
     });
   });
-}
-
-/*
-  draw a matrix as hit points
-*/
-function drawGrid(matrix) {
-  // var color;
-  matrix.forEach(function(row, rowIdx) {
-    row.forEach(function(column, colIdx) {
-      // color = column < 200 ? 0 : 255;
-      gridCtx.beginPath();
-      gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      // gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 2, 2);
-      gridCtx.arc(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 1, 0, 2 * PI, false);
-      gridCtx.fill();
-      //gridCtx.lineWidth = 1;
-      //gridCtx.strokeStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      //gridCtx.stroke();
-      gridCtx.closePath();
-    });
-  });
-}
-
-/*
-  center the canvas
-  returns canvas
-*/
-function center(canvas) {
 
 }
+
 
 /*
   bitwise Math.round
@@ -403,14 +379,13 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  // drawPixels(
-  //   matrix(150)
-  // );
 
-  drawGrid(matrix());
-
+  draw(matrix());
+  renderer.render(stage);
   requestAnimFrame(loop);
+
 }
+
 
 /*
   kickstart the process
