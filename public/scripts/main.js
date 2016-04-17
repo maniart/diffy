@@ -50,13 +50,6 @@ if(navigator.mediaDevices.getUserMedia === undefined) {
   navigator.mediaDevices.getUserMedia = getUserMedia;
 }
 
-/*
-  Utility for getting dom references
-  return DOM Object
-*/
-function $(selector) {
-  return document.querySelector(selector);
-}
 
 /*
   utility function to log only once

@@ -11,3 +11,21 @@
     display: inline-block;
   }
 }
+
+body {
+  font-size: 16px;
+}
+
+.small {
+  font-size: .7em;
+  color: black;
+  width: 10%;
+}
+
+.camera {
+  background: #eee;
+  width: 300px;
+  height: 300px;
+  float: left;
+  margin: 15px;
+}
