@@ -173,7 +173,7 @@ var isWorkerAvailable = 'Worker' in window;
 /*
   Worker
 */
-var differ = new Worker('differ.js');
+var differ = new Worker('../scripts/differ.js');
 
 /*
   Save a reference to Math.PI
