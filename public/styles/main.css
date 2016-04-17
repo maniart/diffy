@@ -1,0 +1,13 @@
+#camera-page {
+  div.select {
+    display: inline-block;
+    margin: 0 0 1em 0;
+  }
+  p.small {
+    font-size: 0.7em;
+  }
+  label {
+    width: 12em;
+    display: inline-block;
+  }
+}
