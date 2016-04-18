@@ -16,6 +16,10 @@ body {
   font-size: 16px;
 }
 
+.hidden {
+  display: none;
+}
+
 .small {
   font-size: .7em;
   color: black;
