@@ -44,6 +44,7 @@ var Camera = {
     this.getVideoEl().src = window.URL.createObjectURL(stream);
     return this;
   },
+
   capture: function() {
     return navigator.mediaDevices.getUserMedia(this.data.constraints)
       .then(function(stream) {
@@ -82,10 +83,15 @@ var Camera = {
       constraints: constraints
     };
     this.container = data.container;
-    this.attachEl(this.container);
-    this.capture().then(function(stream) {
-      self.attachStream(stream);
-    });
+    this
+      .attachEl(this.container)
+      .getEl()
+      .querySelector('#source')
+      .addEventListener('change', function(e) {
+        console.debug('change', e);
+      });
+
+    this.capture().then(this.attachStream.bind(this));
     return this;
   }
 };
