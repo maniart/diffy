@@ -21,21 +21,41 @@ var Camera = {
   getInfo: function() {
     return this.info;
   },
-  getElement: function() {
+  setEl: function(el) {
+    this._el = el;
+    return this;
+  },
+  getEl: function() {
+    return this._el;
+  },
+  createEl: function() {
     var temp = document.createElement('div');
-    temp.innerHTML = _.template(this.template)(this.data);
-    return temp.firstChild;
+    temp.innerHTML = _.template(this.template)(this.data);;
+    return this
+      .setEl(temp.firstChild)
+      .getEl();
   },
   attachEl: function(containerSelector) {
-    $(containerSelector).appendChild(this.getElement());
+    $(containerSelector).appendChild(this.createEl());
     return this;
   },
   attachStream: function(stream) {
-    this.getVideoEl().srcObject = stream;
+    console.log(window.URL.createObjectURL(stream));
+    this.getVideoEl().src = window.URL.createObjectURL(stream);
     return this;
   },
+  capture: function() {
+    return navigator.mediaDevices.getUserMedia(this.data.constraints)
+      .then(function(stream) {
+        console.log('stream is here');
+        return stream;
+      })
+      .catch(function(error) {
+        console.error(error.name + ' : ' + error.message);
+      });
+  },
   getVideoEl: function() {
-    return this.getElement().querySelector('.video');
+    return this.getEl().querySelector('.video');
   },
   template: [
     '<div class="camera" id="<%= label %>">',
@@ -54,6 +74,7 @@ var Camera = {
     '</video>'
   ].join(''),
   init: function(data) {
+    var self = this;
     this.data = {
       label: data.label,
       deviceId: data.deviceId,
@@ -62,6 +83,9 @@ var Camera = {
     };
     this.container = data.container;
     this.attachEl(this.container);
+    this.capture().then(function(stream) {
+      self.attachStream(stream);
+    });
     return this;
   }
 };
