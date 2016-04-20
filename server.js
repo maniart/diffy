@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+
 app.use(express.static('public'));
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
@@ -10,9 +11,14 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + 'static/index.html');
 });
 
+
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  console.log('camera connected');
+  socket.on('stream', function (data) {
+    // console.log('stream ', data);
+    io.sockets.emit('frame', data);
+
   });
+
+
 });

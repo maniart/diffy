@@ -17,17 +17,37 @@ function dropSpaces(str) {
   return str.split(' ').join('');
 };
 
+var socket = io();
+
+socket.on('frame', function(e) {
+  console.log('frame ', e);
+});
+
 var Camera = {
+
   getInfo: function() {
     return this.info;
   },
+
   setEl: function(el) {
     this._el = el;
     return this;
   },
+
   getEl: function() {
     return this._el;
   },
+
+  broadcast: function(stream) {
+    console.log('emitting ', stream);
+    socket.emit('stream', stream);
+    var self = this;
+    requestAnimFrame(function() {
+      self.broadcast(stream);
+    });
+    return stream;
+  },
+
   createEl: function() {
     var temp = document.createElement('div');
     temp.innerHTML = _.template(this.template)(this.data);;
@@ -35,13 +55,22 @@ var Camera = {
       .setEl(temp.firstChild)
       .getEl();
   },
+
   attachEl: function(containerSelector) {
     $(containerSelector).appendChild(this.createEl());
     return this;
   },
+
   attachStream: function(stream) {
     console.log(window.URL.createObjectURL(stream));
-    this.getVideoEl().src = window.URL.createObjectURL(stream);
+    var blob = window.URL.createObjectURL(stream);
+    var self = this;
+    this.getVideoEl().src = blob;
+
+    requestAnimFrame(function() {
+      console.log('-');
+      self.broadcast(blob);
+    });
     return this;
   },
 
@@ -55,9 +84,11 @@ var Camera = {
         console.error(error.name + ' : ' + error.message);
       });
   },
+
   getVideoEl: function() {
     return this.getEl().querySelector('.video');
   },
+
   template: [
     '<div class="camera" id="<%= label %>">',
     '<div class="select">',
@@ -74,6 +105,7 @@ var Camera = {
     '<video width="<%= constraints.video.width %>" height="<%= constraints.video.height %>" class="video" autoplay>',
     '</video>'
   ].join(''),
+
   init: function(data) {
     var self = this;
     this.data = {
@@ -91,7 +123,13 @@ var Camera = {
         console.debug('change', e);
       });
 
-    this.capture().then(this.attachStream.bind(this));
+    this.capture()
+    .then(function(stream) {
+      self.attachStream(stream)
+    })
+    .catch(function(error) {
+      console.error('Failed to broadcast: ', error);
+    });
     return this;
   }
 };
