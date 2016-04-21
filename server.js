@@ -11,13 +11,21 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + 'static/index.html');
 });
 
+function relay(blob) {
+  toBuffer(blob, function(err, buffer) {
+    if(err) throw err;
+
+
+  });
+}
 
 io.on('connection', function (socket) {
   console.log('camera connected');
-  socket.on('stream', function (data) {
+  socket.on('stream', function (buffer) {
     // console.log('stream ', data);
-    io.sockets.emit('frame', data);
-
+    // console.log(buffer);
+    io.sockets.emit('frame', buffer);
+    // relay(blob);
   });
 
 

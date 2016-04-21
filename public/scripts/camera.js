@@ -20,7 +20,7 @@ function dropSpaces(str) {
 var socket = io();
 
 socket.on('frame', function(e) {
-  console.log('frame ', e);
+  // console.log('frame ', e);
 });
 
 var Camera = {
@@ -39,7 +39,7 @@ var Camera = {
   },
 
   broadcast: function(stream) {
-    console.log('emitting ', stream);
+    // console.log('emitting ', stream);
     socket.emit('stream', stream);
     var self = this;
     requestAnimFrame(function() {
@@ -62,22 +62,19 @@ var Camera = {
   },
 
   attachStream: function(stream) {
+    console.log('STREAM RAW = ', stream);
     console.log(window.URL.createObjectURL(stream));
     var blob = window.URL.createObjectURL(stream);
-    var self = this;
-    this.getVideoEl().src = blob;
-
-    requestAnimFrame(function() {
-      console.log('-');
-      self.broadcast(blob);
-    });
+    var video = this.getVideoEl();
+    video.src = blob;
+    this.drawToCanvas();
     return this;
   },
 
   capture: function() {
     return navigator.mediaDevices.getUserMedia(this.data.constraints)
       .then(function(stream) {
-        console.log('stream is here');
+        // console.log('stream is here');
         return stream;
       })
       .catch(function(error) {
@@ -85,8 +82,26 @@ var Camera = {
       });
   },
 
+  drawToCanvas: function() {
+    // console.log('111');
+    var self = this;
+    var video = this.getVideoEl();
+    var ctx = this.getCanvasEl().getContext('2d');
+    ctx.drawImage(video, 0, 0, 260, 200);
+    socket.emit('stream', ctx.getImageData(0, 0, 260, 200));
+
+    requestAnimFrame(function() {
+      self.drawToCanvas(video);
+    });
+    //return this;
+  },
+
   getVideoEl: function() {
     return this.getEl().querySelector('.video');
+  },
+
+  getCanvasEl: function() {
+    return this.getEl().querySelector('.canvas');
   },
 
   template: [
@@ -103,7 +118,9 @@ var Camera = {
     '</select>',
     '</div>',
     '<video width="<%= constraints.video.width %>" height="<%= constraints.video.height %>" class="video" autoplay>',
-    '</video>'
+    '</video>',
+    '<canvas width="260" height="200" class="canvas" id="<%= label %>-canvas">',
+    '</canvas>'
   ].join(''),
 
   init: function(data) {
@@ -125,7 +142,8 @@ var Camera = {
 
     this.capture()
     .then(function(stream) {
-      self.attachStream(stream)
+      self.attachStream(stream);
+
     })
     .catch(function(error) {
       console.error('Failed to broadcast: ', error);

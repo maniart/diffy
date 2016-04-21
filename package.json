@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/maniart/diffy#readme",
   "dependencies": {
+    "blob-to-buffer": "^1.2.6",
     "express": "^4.13.4",
     "socketio": "^1.0.0"
   }

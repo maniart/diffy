@@ -1,8 +1,5 @@
 'use strict';
 var socket = io();
-socket.on('frame', function(e) {
-  console.log(e);
-});
 
 function $(selector) {
   return document.querySelector(selector);
@@ -27,6 +24,11 @@ var toggleBtn = $('#toggle');
   canvas element rendering raw camera input
 */
 var rawCanvas = $('#raw-canvas');
+
+/*
+  kahn tekst
+*/
+var rawCanvasCtx = rawCanvas.getContext('2d');
 
 /*
   toggle the raw videos. callback for `toggleBtn` click
@@ -61,7 +63,11 @@ function mirror(canvas) {
 function center(canvas) {
 
 }
-
+socket.on('frame', function(data) {
+  var imageData = rawCanvasCtx.createImageData(260, 200);
+  imageData.data.set(new Uint8ClampedArray(data));
+  rawCanvasCtx.putImageData(imageData, 0, 0);
+});
 
 /*
   bitwise Math.round
@@ -75,9 +81,9 @@ function round(number) {
   iteratively calculate and draw
   returns undefined
 */
-function loop() {
-
-  requestAnimFrame(loop);
-}
+// function loop() {
+//
+//   requestAnimFrame(loop);
+// }
 
 toggleBtn.addEventListener('click', toggle);
