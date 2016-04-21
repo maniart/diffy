@@ -1,0 +1,23 @@
+{
+  "name": "diffy",
+  "version": "1.0.0",
+  "description": "a client-side JavaScript frame diffing library",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maniart/diffy.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maniart/diffy/issues"
+  },
+  "homepage": "https://github.com/maniart/diffy#readme",
+  "dependencies": {
+    "express": "^4.13.4",
+    "ws": "^1.1.0"
+  }
+}
