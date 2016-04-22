@@ -1,4 +1,19 @@
 'use strict';
+
+/*
+  shim requestAnimationFrame api
+  source: http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+*/
+ var requestAnimFrame =
+  window.requestAnimationFrame       ||
+  window.webkitRequestAnimationFrame ||
+  window.mozRequestAnimationFrame    ||
+  window.oRequestAnimationFrame      ||
+  window.msRequestAnimationFrame     ||
+  function(callback) {
+    window.setTimeout(callback, 1000 / 60);
+  };
+
 /*
   shim getUserMedia with a Promise api
   source: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia

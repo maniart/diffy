@@ -6,12 +6,23 @@
 function capture() {
   return navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
-      return window.URL.createObjectURL(stream);
+      return stream;
     })
     .catch(function(error) {
       console.error(error.name + ' : ' + error.message);
     });
 }
+
+// store a ref
+var createObjectURL = window.URL.createObjectURL;
+
+/*
+  Stream object populated by getUserMedia
+*/
+var localMediaStream = null;
+
+// imageData
+var imageData = null;
 
 /*
   constraints object for getUserMedia
@@ -27,17 +38,43 @@ var constraints = {
 // video element
 var videoEl = $('.video-input');
 
+// canvas element
+var canvasEl = $('.canvas-input');
+
+// canvas context
+var ctx = canvasEl.getContext('2d');
+
+// ws
 var ws = new WebSocket('ws://localhost:8080');
 
-ws.onmessage = function(message) {
-  console.log('ws ', message.data);
+function snapshot() {
+	if (localMediaStream) {
+		ctx.drawImage(videoEl, 0, 0, 260, 200);
+
+		imageData = canvasEl.toDataURL('image/jpeg');
+    ws.send(imageData);
+		// socket.emit("image", imageData);
+	}
 };
+
+// ws.onmessage = function(message) {
+//   console.log('ws ', message.data);
+// };
 
 // kickoff
 function init() {
   capture()
     .then(function(stream) {
-      videoEl.src = stream;
+      localMediaStream = stream;
+      videoEl.src = createObjectURL(stream);
+      videoEl.addEventListener('timeupdate', function() {
+        snapshot();
+      });
+
+      return stream;
+    })
+    .catch(function(err) {
+      console.error('capture failed: ', err);
     });
 }
 
