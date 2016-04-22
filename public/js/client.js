@@ -14,7 +14,7 @@ img.onload = function() {
 };
 
 ws.onmessage = function(message) {
-  img.src = message.data;
+  img.src = message.data
   //console.log('ws ', message.data);
 };
 

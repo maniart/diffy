@@ -13,6 +13,10 @@ function capture() {
     });
 }
 
+function loop(callback) {
+  window.setTimeout(callback, 1000 / 60);
+};
+
 // store a ref
 var createObjectURL = window.URL.createObjectURL;
 
@@ -55,6 +59,8 @@ function snapshot() {
     ws.send(imageData);
 		// socket.emit("image", imageData);
 	}
+
+  loop(snapshot);
 };
 
 // ws.onmessage = function(message) {
@@ -67,9 +73,7 @@ function init() {
     .then(function(stream) {
       localMediaStream = stream;
       videoEl.src = createObjectURL(stream);
-      videoEl.addEventListener('timeupdate', function() {
-        snapshot();
-      });
+      snapshot();
 
       return stream;
     })
