@@ -15,10 +15,9 @@ server.listen(8080, function() {
 });
 
 webSocketServer.on('connection', function connection(ws) {
-  var location = url.parse(ws.upgradeReq.url, true);
-  console.log('new client');
+  // var location = url.parse(ws.upgradeReq.url, true);
+  console.log('new client', ws.upgradeReq.headers['sec-websocket-key']);
   ws.on('message', function incoming(message) {
-    console.log('received: %s');
     webSocketServer.clients.forEach(function(client) {
       client.send(message);
     });
