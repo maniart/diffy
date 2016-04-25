@@ -17,11 +17,12 @@ server.listen(8081, function() {
 webSocketServer.on('connection', function connection(ws) {
   console.log('server 1: new client');
   ws.on('message', function incoming(message) {
+    logger('-- message received');
     webSocketServer.clients.forEach(function(client) {
       if(client.readyState === client.OPEN) {
         client.send(message);
       } else {
-        console.error('client is not ready');
+        console.error('client 1 is not ready');
       }
 
     });

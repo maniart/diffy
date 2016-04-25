@@ -20,7 +20,7 @@ webSocketServer.on('connection', function connection(ws) {
       if(client.readyState === client.OPEN) {
         client.send(message);
       } else {
-        console.error('client is not ready');
+        console.error('client 3 is not ready');
       }
 
     });

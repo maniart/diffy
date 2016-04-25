@@ -10,7 +10,7 @@ var webSocketServer = new WebSocketServer({ server: server });
 var logger = utils.createLogOnce();
 
 server.listen(8082, function() {
-  console.log('server 1 listening on 8082');
+  console.log('server 2 listening on 8082');
 });
 
 webSocketServer.on('connection', function connection(ws) {
@@ -20,7 +20,7 @@ webSocketServer.on('connection', function connection(ws) {
       if(client.readyState === client.OPEN) {
         client.send(message);
       } else {
-        console.error('client is not ready');
+        console.error('client 2 is not ready');
       }
 
     });

@@ -22,6 +22,9 @@ function createLogOnce() {
   }
 }
 
+var logger = createLogOnce();
+
+
 /*
   bitwise abs operation
   returns value
@@ -67,6 +70,7 @@ function createDiffBuffer(messageEvent) {
          delta;           // red
     }
   }
+  logger('differ - posting: ', buffer);
 
   this.postMessage(buffer);
 }

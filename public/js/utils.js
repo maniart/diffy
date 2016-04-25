@@ -72,3 +72,14 @@ if(navigator.mediaDevices.getUserMedia === undefined) {
 function $(selector) {
   return document.querySelector(selector);
 }
+
+/*
+  hirozintally mirror canvas
+  returns canvas
+*/
+function mirror(canvas) {
+  var ctx = canvas.getContext('2d');
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+  return canvas;
+}
