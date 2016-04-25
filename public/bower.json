@@ -1,0 +1,17 @@
+{
+  "name": "public",
+  "homepage": "https://github.com/maniart/diffy",
+  "authors": [
+    "maniart <mani.art@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

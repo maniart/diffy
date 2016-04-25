@@ -57,7 +57,4 @@ ws3.onopen = function(event) {
 }
 
 
-// draw
-function draw() {
-
-}
+var containerEl = $('.container');
