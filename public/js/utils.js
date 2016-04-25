@@ -14,6 +14,21 @@
     window.setTimeout(callback, 1000 / 60);
   };
 
+  /*
+    utility function to log only once
+  */
+  function createLogOnce() {
+    var counter = 0;
+    return function logOnce() {
+      if(counter < 1) {
+        console
+          .log
+          .apply(console, arguments);
+      }
+      counter ++;
+    }
+  }
+
 /*
   shim getUserMedia with a Promise api
   source: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia

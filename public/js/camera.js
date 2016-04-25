@@ -17,6 +17,8 @@ function loop(callback) {
   window.setTimeout(callback, 1000 / 60);
 };
 
+var logger = createLogOnce();
+
 // store a ref
 var createObjectURL = window.URL.createObjectURL;
 
@@ -49,13 +51,17 @@ var canvasEl = $('.canvas-input');
 var ctx = canvasEl.getContext('2d');
 
 // ws
-var ws = new WebSocket('ws://localhost:8080');
+var port = +window.location.hash.substr(1) || 8081;
+var url = 'ws://localhost:' + port;
+var ws = new WebSocket(url);
+console.log('streaming to port: ', port);
 
 function snapshot() {
 	if (localMediaStream) {
 		ctx.drawImage(videoEl, 0, 0, 260, 200);
 
 		imageData = canvasEl.toDataURL('image/jpeg');
+    logger(imageData);
     ws.send(imageData);
 		// socket.emit("image", imageData);
 	}
@@ -82,4 +88,11 @@ function init() {
     });
 }
 
-init();
+ws.onopen = function(event) {
+  console.log(event);
+  init();
+};
+
+ws.onerror = function(err) {
+  console.error(err);
+};
