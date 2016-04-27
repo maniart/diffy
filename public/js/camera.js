@@ -20,6 +20,7 @@ function loopWithSetTimeOut(callback) {
   window.setTimeout(callback, 1000 / 60);
 };
 
+
 // make a once-logger
 var logger = createLogOnce();
 
