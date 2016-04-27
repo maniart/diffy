@@ -1,3 +1,5 @@
+'use strict';
+
 var messageData;
 var buffer;
 var data;
@@ -6,6 +8,16 @@ var data2;
 var width;
 var height;
 var sensitivity;
+console.log('ssss')
+// port should be variable. passable configurable etc if we need three servers
+var port = 8081;
+// assemble the endpoint url
+var url = 'ws://localhost:' + port;
+
+// create a WS connection
+var ws = new WebSocket(url);
+ws.binaryType = 'arraybuffer';
+
 
 /*
   utility function to log only once
@@ -45,7 +57,8 @@ function polarize(value, threshold) {
   create diff image pixel buffer
 */
 function createDiffBuffer(messageEvent) {
-  var i;
+  var i, average1, average2, delta;
+
   messageData = messageEvent.data;
   buffer = messageData.buffer;
   data1 = messageData.data1;
@@ -72,7 +85,10 @@ function createDiffBuffer(messageEvent) {
   }
   logger('differ - posting: ', buffer);
 
-  this.postMessage(buffer);
+  ws.send(buffer);
+  //this.postMessage(buffer);
 }
 
-this.addEventListener('message', createDiffBuffer);
+ws.addEventListener('open', function() {
+  this.addEventListener('message', createDiffBuffer);
+}.bind(this));

@@ -99,13 +99,15 @@ var differ = new Worker('./js/differ.js');
 var blendImageData = blendCtx.getImageData(0, 0, blendWidth, blendHeight);
 
 // ws - read port from # part of url
-var port = +window.location.hash.substr(1) || 8081;
+//var port = +window.location.hash.substr(1) || 8081;
 
-// assemble the endpoint url
-var url = 'ws://localhost:' + port;
 
-// create a WS connection
-var ws = new WebSocket(url);
+
+// // assemble the endpoint url
+// var url = 'ws://localhost:' + port;
+//
+// // create a WS connection
+// var ws = new WebSocket(url);
 
 /*
   draws stream into a output element (video or canvas)
@@ -228,7 +230,7 @@ function broadcast() {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  broadcast();
+  //broadcast();
   loopWithSetTimeOut(loop);
 }
 
@@ -251,7 +253,7 @@ function init() {
       //eturn stream;
       logger('----1');
       // order is important
-      differ.addEventListener('message', drawBlendImage);
+      //differ.addEventListener('message', drawBlendImage);
       [rawCanvas, blendCanvas].forEach(mirror);
       pipe(stream, rawVideo);
       loop();
@@ -262,14 +264,14 @@ function init() {
       console.error('capture failed: ', err);
     });
 }
-
-ws.onopen = function(event) {
-  // WS connection is open. kick off.
-  console.log('WS connection is open.');
-  init();
-};
-
-ws.onerror = function(err) {
-  // Omg noes.
-  console.error('WS error: ', err);
-};
+init();
+// ws.onopen = function(event) {
+//   // WS connection is open. kick off.
+//   console.log('WS connection is open.');
+//   init();
+// };
+//
+// ws.onerror = function(err) {
+//   // Omg noes.
+//   console.error('WS error: ', err);
+// };
