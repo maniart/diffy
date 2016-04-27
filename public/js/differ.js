@@ -10,13 +10,7 @@ var height;
 var sensitivity;
 console.log('ssss')
 // port should be variable. passable configurable etc if we need three servers
-var port = 8081;
-// assemble the endpoint url
-var url = 'ws://localhost:' + port;
 
-// create a WS connection
-var ws = new WebSocket(url);
-ws.binaryType = 'arraybuffer';
 
 
 /*
@@ -85,10 +79,12 @@ function createDiffBuffer(messageEvent) {
   }
   logger('differ - posting: ', buffer, ' bytelength is', buffer.byteLength);
 
-  ws.send(buffer);
+  // ws.send(buffer);
   this.postMessage(buffer);
 }
 
-ws.addEventListener('open', function() {
-  this.addEventListener('message', createDiffBuffer);
-}.bind(this));
+this.addEventListener('message', createDiffBuffer);
+//
+//
+// ws.addEventListener('open', function() {
+// }.bind(this));

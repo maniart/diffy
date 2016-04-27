@@ -54,6 +54,12 @@ var constraints = {
   }
 };
 
+/*
+  grid image resolution values
+*/
+var GRID_RESOLUTION_X = 80;
+var GRID_RESOLUTION_Y = 80;
+
 // video element
 var rawVideo = $('#raw-video');
 
@@ -99,16 +105,15 @@ var differ = new Worker('./js/differ.js');
 var blendImageData = blendCtx.getImageData(0, 0, blendWidth, blendHeight);
 
 // ws - read port from # part of url
-//var port = +window.location.hash.substr(1) || 8081;
+var port = +window.location.hash.substr(1) || 8081;
 
 
 
-// // assemble the endpoint url
-// var url = 'ws://localhost:' + port;
-//
-// // create a WS connection
-// var ws = new WebSocket(url);
+// assemble the endpoint url
+var url = 'ws://localhost:' + port;
 
+// create a WS connection
+var ws = new WebSocket(url);
 /*
   draws stream into a output element (video or canvas)
   returns output
@@ -204,24 +209,68 @@ function drawBlendImage(messageEvent) {
   previousImageData = currentImageData;
 }
 
-// send it up on WS
-// function broadcast() {
-//   ws.send(blendCanvas.toDataURL('image/jpeg'));
-// }
+/*
+  create a matrix
+*/
+function matrix() {
+  var matrix = [];
+  var i;
+  var j;
+  var posX;
+  var posY;
+  var k = 0;
+  var cellWidth = blendWidth / GRID_RESOLUTION_X;
+  var cellHeight = blendHeight / GRID_RESOLUTION_Y
+  var cellImageData;
+  var cellImageDataLength;
+  var cellPixelCount;
+  var average = 0;
 
-// take a snapshot of canvas, turn it into datUrl
-// and send to WS server
-// kicks off a loop executing itself *hopfully* 60 fps
-// function snapshot() {
-// 	if (localMediaStream) {
-// 		ctx.drawImage(rawVideo, 0, 0, 260, 100);
-// 		currentImageData = rawCanvas.toDataURL('image/jpeg');
-//     // logger('currentImageData data is: ', currentImageData);
-//     ws.send(currentImageData);
-// 	}
-//
-//   loopWithSetTimeOut(snapshot);
-// };
+  for(i = 0; i < blendWidth; i += cellWidth) {
+    var row = [];
+    for(j = 0; j < blendHeight; j += cellHeight) {
+      cellImageData = blendCtx.getImageData(i, j, cellWidth, cellHeight).data;
+      /*TODO refactor with bitshifting */
+      cellImageDataLength = cellImageData.length;
+      cellPixelCount = cellImageDataLength / 4;
+      while(k < cellPixelCount) {
+        average += (cellImageData[k * 4] + cellImageData[k * 4 + 1] + cellImageData[k * 4 + 2]) / 3;
+        ++k;
+      }
+      average = round(average / cellPixelCount);
+      // gridCtx.beginPath();
+      // gridCtx.rect(i, j, cellWidth * 4, cellHeight * 4);
+      //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
+      /* push the value in the row */
+      row.push(average  );
+      average = 0;
+      k = 0;
+    }
+    matrix.push(row); // store the row in matrix
+  }
+
+  return matrix;
+}
+
+
+// send it up on WS
+function broadcast(matrix) {
+  // stringify matrix array before send
+  ws.send(JSON.stringify(matrix));
+}
+
+//take a snapshot of canvas, turn it into datUrl
+//and send to WS server
+//kicks off a loop executing itself *hopfully* 60 fps
+function snapshot() {
+	if (localMediaStream) {
+		ctx.drawImage(rawVideo, 0, 0, 260, 100);
+		currentImageData = rawCanvas.toDataURL('image/jpeg');
+    // logger('currentImageData data is: ', currentImageData);
+	}
+
+  loopWithSetTimeOut(snapshot);
+};
 
 /*
   iteratively calculate and draw
@@ -230,7 +279,7 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  //broadcast();
+  broadcast(matrix());
   loopWithSetTimeOut(loop);
 }
 

@@ -51,11 +51,16 @@ var blendCanvas = $('#blend-canvas');
 var blendCtx = blendCanvas.getContext('2d');
 var blendWidth = blendCanvas.width;
 var blendHeight = blendCanvas.height;
-var blendImageData = blendCtx.getImageData(0, 0, blendWidth, blendHeight);
 
 var toggleBtn = $('#toggle')
 
 
+
+var blendImg = $('#blend-img');
+
+blendImg.onload = function() {
+  blendCtx.drawImage(this, 0, 0, 130, 100);
+};
 
 /*
   toggle the raw videos. callback for `toggleBtn` click
@@ -111,6 +116,7 @@ var isWorkerAvailable = 'Worker' in window;
 */
 var PI = Math.PI;
 
+
 /*
   grid image resolution values
 */
@@ -125,48 +131,6 @@ var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
 
 
 
-/*
-  create a matrix
-*/
-function matrix() {
-  var matrix = [];
-  var i;
-  var j;
-  var posX;
-  var posY;
-  var k = 0;
-  var cellWidth = blendWidth / GRID_RESOLUTION_X;
-  var cellHeight = blendHeight / GRID_RESOLUTION_Y
-  var cellImageData;
-  var cellImageDataLength;
-  var cellPixelCount;
-  var average = 0;
-
-  for(i = 0; i < blendWidth; i += cellWidth) {
-    var row = [];
-    for(j = 0; j < blendHeight; j += cellHeight) {
-      cellImageData = blendCtx.getImageData(i, j, cellWidth, cellHeight).data;
-      /*TODO refactor with bitshifting */
-      cellImageDataLength = cellImageData.length;
-      cellPixelCount = cellImageDataLength / 4;
-      while(k < cellPixelCount) {
-        average += (cellImageData[k * 4] + cellImageData[k * 4 + 1] + cellImageData[k * 4 + 2]) / 3;
-        ++k;
-      }
-      average = round(average / cellPixelCount);
-      // gridCtx.beginPath();
-      // gridCtx.rect(i, j, cellWidth * 4, cellHeight * 4);
-      //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
-      /* push the value in the row */
-      row.push(average  );
-      average = 0;
-      k = 0;
-    }
-    matrix.push(row); // store the row in matrix
-  }
-
-  return matrix;
-}
 
 /*
   draw a matrix as a pixelated image
@@ -219,19 +183,31 @@ function round(number) {
   return (number + .5) >> 0;
 }
 
+var wsData;
 
+var cnt = 0;
 /*
   iteratively calculate and draw
   returns undefined
 */
+
+// we use setTimeout here and not rAf
+// because we want the loop to continue
+// even when the page it runs on is out of focus.
+function loopWithSetTimeOut(callback) {
+  window.setTimeout(callback, 1000 / 60);
+};
+
+var grid = []; // initially
 function loop() {
   // drawPixels(
   //   matrix(150)
   // );
+  drawGrid(grid);
+  //
+  //drawGrid(matrix());
 
-  ///drawGrid(matrix());
-
-  requestAnimFrame(loop);
+  loopWithSetTimeOut(loop);
 }
 
 
@@ -242,13 +218,10 @@ function init() {
   ws.addEventListener('message', function(ev) {
     // logOnce_2('ev.data' ,ee.data);
     // blendImageData.data = ev.data;
-    blendImageData
-    .data
-    .set(
-      new Uint8ClampedArray(ev.data)
-    );
+    // debugger;
+    grid = JSON.parse(ev.data);
 
-    blendCtx.putImageData(blendImageData, 0, 0);
+    // drawGrid(JSON.parse(ev.data));
   });
 }
 

@@ -26,7 +26,8 @@
         }
         #container {
           position: absolute;
-          left: 0;
+          right: 0;
+          border: 1px solid blue;
           top: 0;
           z-index: 9;
         }
@@ -38,6 +39,8 @@
             outline: none;
             width: 30px;
             height: 30px;
+            color: blue;
+            border: 1px solid blue;
             padding: 3px;
             color: black;
             position: absolute;
@@ -45,7 +48,7 @@
             font-size: 20px;
             line-height: 1.6;
             top: 0;
-            left: 0;
+            right: 0;
             z-index: 10;
             text-decoration: none;
         }
@@ -59,6 +62,8 @@
     id="toggle">
     -
   </a>
+
+  <img id="blend-img" alt="" />
 
   <div id="container">
     <canvas
