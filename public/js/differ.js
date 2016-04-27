@@ -83,7 +83,7 @@ function createDiffBuffer(messageEvent) {
          delta;           // red
     }
   }
-  logger('differ - posting: ', buffer);
+  logger('differ - posting: ', buffer, ' bytelength is', buffer.byteLength);
 
   ws.send(buffer);
   //this.postMessage(buffer);

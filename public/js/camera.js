@@ -49,8 +49,8 @@ var previousImageData = null;
 var constraints = {
   audio: false,
   video: {
-    width: 260,
-    height: 200
+    width: 130,
+    height: 100
   }
 };
 
@@ -205,16 +205,16 @@ function drawBlendImage(messageEvent) {
 }
 
 // send it up on WS
-function broadcast() {
-  ws.send(blendCanvas.toDataURL('image/jpeg'));
-}
+// function broadcast() {
+//   ws.send(blendCanvas.toDataURL('image/jpeg'));
+// }
 
 // take a snapshot of canvas, turn it into datUrl
 // and send to WS server
 // kicks off a loop executing itself *hopfully* 60 fps
 // function snapshot() {
 // 	if (localMediaStream) {
-// 		ctx.drawImage(rawVideo, 0, 0, 260, 200);
+// 		ctx.drawImage(rawVideo, 0, 0, 260, 100);
 // 		currentImageData = rawCanvas.toDataURL('image/jpeg');
 //     // logger('currentImageData data is: ', currentImageData);
 //     ws.send(currentImageData);
@@ -251,7 +251,7 @@ function init() {
 
       // because why not.
       //eturn stream;
-      logger('----1');
+      // logger('----1');
       // order is important
       //differ.addEventListener('message', drawBlendImage);
       [rawCanvas, blendCanvas].forEach(mirror);
