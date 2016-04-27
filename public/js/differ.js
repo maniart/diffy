@@ -86,7 +86,7 @@ function createDiffBuffer(messageEvent) {
   logger('differ - posting: ', buffer, ' bytelength is', buffer.byteLength);
 
   ws.send(buffer);
-  //this.postMessage(buffer);
+  this.postMessage(buffer);
 }
 
 ws.addEventListener('open', function() {

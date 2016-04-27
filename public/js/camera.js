@@ -253,7 +253,7 @@ function init() {
       //eturn stream;
       // logger('----1');
       // order is important
-      //differ.addEventListener('message', drawBlendImage);
+      differ.addEventListener('message', drawBlendImage);
       [rawCanvas, blendCanvas].forEach(mirror);
       pipe(stream, rawVideo);
       loop();

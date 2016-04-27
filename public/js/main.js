@@ -229,7 +229,7 @@ function loop() {
   //   matrix(150)
   // );
 
-  drawGrid(matrix());
+  ///drawGrid(matrix());
 
   requestAnimFrame(loop);
 }
@@ -240,7 +240,15 @@ function init() {
   loop();
   toggleBtn.addEventListener('click', toggle);
   ws.addEventListener('message', function(ev) {
-    blendImageData.data = ev.data;
+    // logOnce_2('ev.data' ,ee.data);
+    // blendImageData.data = ev.data;
+    blendImageData
+    .data
+    .set(
+      new Uint8ClampedArray(ev.data)
+    );
+
+    blendCtx.putImageData(blendImageData, 0, 0);
   });
 }
 
