@@ -1,8 +1,17 @@
 'use strict';
 
 var ws = new WebSocket('ws://localhost:8081');
-ws.binaryType = 'arraybuffer';
 
+// debugger;
+var renderer = new PIXI.WebGLRenderer(1040, 800);
+
+
+document.body.appendChild(renderer.view);
+
+
+// create the root of the scene graph
+var stage = new PIXI.Container();
+var graphics = new PIXI.Graphics();
 /*
   shim requestAnimationFrame api
   source: http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -155,6 +164,7 @@ function drawGrid(matrix) {
     row.forEach(function(column, colIdx) {
       // color = column < 200 ? 0 : 255;
       gridCtx.beginPath();
+
       gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
       // gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 2, 2);
       gridCtx.arc(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 1, 0, 2 * PI, false);
@@ -163,6 +173,30 @@ function drawGrid(matrix) {
       //gridCtx.strokeStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
       //gridCtx.stroke();
       gridCtx.closePath();
+    });
+  });
+}
+/*
+  draw a matrix as hit points
+*/
+function drawLine(matrix) {
+  // var color;
+  matrix.forEach(function(row, rowIdx) {
+    row.forEach(function(column, colIdx) {
+
+      graphics.beginFill(0x00FF00);
+      // draw a triangle using lines
+      graphics.moveTo(rowIdx * 10, colIdx * 10);
+      graphics.lineTo(0, 100);
+      graphics.lineTo(50, 100);
+
+      // end the fill
+      graphics.endFill();
+
+      // add it the stage so we see it on our screens..
+      stage.addChild(graphics);
+
+
     });
   });
 }
@@ -203,9 +237,12 @@ function loop() {
   // drawPixels(
   //   matrix(150)
   // );
-  drawGrid(grid);
+  drawLine(grid);
+  // for (var i = stage.children.length - 1; i >= 0; i--) {	stage.removeChild(stage.children[i]);};
+
   //
   //drawGrid(matrix());
+  renderer.render(stage);
 
   loopWithSetTimeOut(loop);
 }
