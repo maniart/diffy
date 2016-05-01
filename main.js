@@ -59,6 +59,21 @@ function $(selector) {
 }
 
 /*
+  Scale canvas so it fills the screen while maintaining ratio
+*/
+function fillScreen(canvas) {
+  var sourceRatio = _width / _height;
+  var windowRatio = window.innerWidth / window.innerHeight;
+  var canvasEl = $(canvas);
+
+  canvasEl.height = window.innerHeight;
+  canvasEl.width = canvasEl.height * sourceRatio;
+  console.log(sourceRatio, windowRatio  )
+
+  return canvasEl;
+}
+
+/*
   utility function to log only once
 */
 function createLogOnce() {
@@ -159,6 +174,17 @@ var blendWidth = blendCanvas.width;
   height of blend canvas
 */
 var blendHeight = blendCanvas.height;
+
+/*
+  uniform width of all "control" videso (raw, blend, etc.) - small canvases for debugging mostly.
+*/
+var _width = blendWidth;
+var _height = blendHeight;
+
+/*
+  width to height ratio of all canvases
+*/
+var ratio = blendWidth / blendHeight;
 
 /*
   blend imageData
@@ -418,6 +444,7 @@ function loop() {
 capture()
   .then(
     function(input) {
+      fillScreen('#grid-canvas'); // maximize canvas size;
       // order is important
       differ.addEventListener('message', drawBlendImage);
       toggleBtn.addEventListener('click', toggle);
