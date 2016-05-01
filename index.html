@@ -29,7 +29,7 @@
           clear: both;
           float: left;
         }
-        #grid-canvas {
+        #grid-canvas, #stage-canvas {
           /*background: white;*/
           border: 1px solid #333;
           position: absolute;
@@ -37,8 +37,8 @@
           top: 50%;
           transform: translate(-50%, -50%);
 
-          width: 1040px;
-          height: 800px;
+          width: 1248px;
+          height: 960px;
         }
         #container {
           position: absolute;
@@ -67,6 +67,7 @@
         }
     </style>
     <title>Diffy 0.1</title>
+    <script src="lib/pixi.min.js"></script>
 </head>
 <body>
 
@@ -99,8 +100,8 @@
 
   <canvas
     id="grid-canvas"
-    width="1040"
-    height="800">
+    width="1248"
+    height="960">
   </canvas>
 
   <script src="main.js"></script>

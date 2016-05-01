@@ -204,6 +204,10 @@ var GRID_RESOLUTION_Y = 80;
 var CELL_WIDTH = gridWidth / GRID_RESOLUTION_X;
 var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
 
+/* PIXI drawing related things */
+var renderer = PIXI.autoDetectRenderer(1248, 960  , { antialias: true });
+renderer.view.id = 'stage-canvas';
+document.body.appendChild(renderer.view);
 
 /*
   toggle the raw videos. callback for `toggleBtn` click
@@ -374,6 +378,13 @@ function drawGrid(matrix) {
       gridCtx.closePath();
     });
   });
+}
+
+/*
+  main draw function with PIXI
+*/
+function draw() {
+
 }
 
 /*
