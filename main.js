@@ -420,21 +420,22 @@ function draw(matrix) {
       pos1.x = rowIdx * CELL_WIDTH;
       pos1.y = colIdx * CELL_HEIGHT;
 
-      pos2.x = (gridWidth * 2) - pos1.x;
+      pos2.x = drawWidth - pos1.x;
       pos2.y = pos1.y;
 
       drawCtx.beginPath();
+      drawCtx.lineCap= 'round';
 
-      color = column === 255 ? '#ffffff' : '#000000'
+      color = column === 255 ? '#ffffff' : 'rgb(' + rowIdx + ', 0, ' + colIdx + ')'
 
       drawCtx.strokeStyle = color;
       drawCtx.lineWidth = 0.25;
 
 
-      drawCtx.moveTo((pos1.x - 5), (pos1.y - 5));
+      drawCtx.moveTo((pos1.x - 10), (pos1.y - 10));
       drawCtx.lineTo(pos1.x + Math.cos(count) * 10, pos1.y + Math.sin(count));
 
-      drawCtx.moveTo((pos2.x - 5), (pos2.y - 5));
+      drawCtx.moveTo((pos2.x - 10), (pos2.y - 10));
       drawCtx.lineTo(pos2.x + Math.cos(count) * 10, pos2.y + Math.sin(count));
 
       drawCtx.stroke();
