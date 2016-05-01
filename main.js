@@ -142,6 +142,26 @@ var gridWidth = gridCanvas.width;
 var gridHeight = gridCanvas.height;
 
 /*
+  main drawing stage
+*/
+var drawCanvas = $('#draw-canvas');
+
+/*
+  main drawing context
+*/
+var drawCtx = drawCanvas.getContext('2d');
+
+/*
+  width of grid canvas
+*/
+var drawWidth = drawCanvas.width;
+
+/*
+  height of grid canvas
+*/
+var drawHeight = drawCanvas.height;
+
+/*
   canvas element rendering blend image
 */
 var blendCanvas = $('#blend-canvas');
@@ -204,10 +224,6 @@ var GRID_RESOLUTION_Y = 80;
 var CELL_WIDTH = gridWidth / GRID_RESOLUTION_X;
 var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
 
-/* PIXI drawing related things */
-var renderer = PIXI.autoDetectRenderer(1248, 960  , { antialias: true });
-renderer.view.id = 'stage-canvas';
-document.body.appendChild(renderer.view);
 
 /*
   toggle the raw videos. callback for `toggleBtn` click
@@ -380,11 +396,52 @@ function drawGrid(matrix) {
   });
 }
 
+function getRandomColor() {
+  var colors = [
+    '#00ffff',
+    '#ff00ff',
+    '#000000',
+    '#ffff00'
+  ];
+  return colors[ Math.floor ( Math.random() * (colors.length ))];
+}
+var count = 0;
 /*
-  main draw function with PIXI
+  main draw function
 */
-function draw() {
+function draw(matrix) {
+  var color;
+  count += 0.1;
+  var pos = {};
+  matrix.forEach(function(row, rowIdx) {
+    row.forEach(function(column, colIdx) {
+      pos.x = rowIdx * CELL_WIDTH;
+      pos.y = colIdx * CELL_HEIGHT;
 
+      drawCtx.beginPath();
+
+      color = column === 255 ? '#ffffff' : '#000000'
+      drawCtx.strokeStyle = color;
+      drawCtx.moveTo((pos.x - 5), (pos.y - 5));
+      drawCtx.lineWidth = 0.25;
+
+      drawCtx.lineTo(pos.x + Math.cos(count) * 10, pos.y + Math.sin(count));
+
+
+
+
+      //drawCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
+
+      // gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 2, 2);
+      // drawCtx.arc(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 1, 0, 2 * PI, false);
+      // drawCtx.fill();
+      //gridCtx.lineWidth = 1;
+      //gridCtx.strokeStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
+      //gridCtx.stroke();
+      drawCtx.stroke();
+      drawCtx.closePath();
+    });
+  });
 }
 
 /*
@@ -426,11 +483,14 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
+
+  draw(matrix()); // pixijs draw
+
   // drawPixels(
   //   matrix(150)
   // );
 
-  drawGrid(matrix());
+  // drawGrid(matrix());
 
   requestAnimFrame(loop);
 }
