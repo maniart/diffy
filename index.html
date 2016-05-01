@@ -6,6 +6,8 @@
         html, body {
           margin: 0;
           padding: 0;
+          width: 100%;
+          min-height: 100%;
           -moz-box-sizing: border-box;
           -webkit-box-sizing: border-box;
           box-sizing: border-box;
@@ -25,7 +27,14 @@
           float: left;
         }
         #grid-canvas {
-          border: 1px solid red;
+          border: 1px solid #333;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+
+          width: 1040px;
+          height: 800px;
         }
         #container {
           position: absolute;
@@ -85,7 +94,9 @@
   </div>
 
   <canvas
-    id="grid-canvas">
+    id="grid-canvas"
+    width="1040"
+    height="800">
   </canvas>
 
   <script src="main.js"></script>

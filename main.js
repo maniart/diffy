@@ -58,20 +58,6 @@ function $(selector) {
   return document.querySelector(selector);
 }
 
-/*
-  Scale canvas so it fills the screen while maintaining ratio
-*/
-function fillScreen(canvas) {
-  var sourceRatio = _width / _height;
-  var windowRatio = window.innerWidth / window.innerHeight;
-  var canvasEl = $(canvas);
-
-  canvasEl.height = window.innerHeight;
-  canvasEl.width = canvasEl.height * sourceRatio;
-  console.log(sourceRatio, windowRatio  )
-
-  return canvasEl;
-}
 
 /*
   utility function to log only once
@@ -444,7 +430,6 @@ function loop() {
 capture()
   .then(
     function(input) {
-      fillScreen('#grid-canvas'); // maximize canvas size;
       // order is important
       differ.addEventListener('message', drawBlendImage);
       toggleBtn.addEventListener('click', toggle);
