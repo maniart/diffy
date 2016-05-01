@@ -412,32 +412,31 @@ var count = 0;
 function draw(matrix) {
   var color;
   count += 0.1;
-  var pos = {};
+  var pos1 = {};
+  var pos2 = {};
+
   matrix.forEach(function(row, rowIdx) {
     row.forEach(function(column, colIdx) {
-      pos.x = rowIdx * CELL_WIDTH;
-      pos.y = colIdx * CELL_HEIGHT;
+      pos1.x = rowIdx * CELL_WIDTH;
+      pos1.y = colIdx * CELL_HEIGHT;
+
+      pos2.x = (gridWidth * 2) - pos1.x;
+      pos2.y = pos1.y;
 
       drawCtx.beginPath();
 
       color = column === 255 ? '#ffffff' : '#000000'
+
       drawCtx.strokeStyle = color;
-      drawCtx.moveTo((pos.x - 5), (pos.y - 5));
       drawCtx.lineWidth = 0.25;
 
-      drawCtx.lineTo(pos.x + Math.cos(count) * 10, pos.y + Math.sin(count));
 
+      drawCtx.moveTo((pos1.x - 5), (pos1.y - 5));
+      drawCtx.lineTo(pos1.x + Math.cos(count) * 10, pos1.y + Math.sin(count));
 
+      drawCtx.moveTo((pos2.x - 5), (pos2.y - 5));
+      drawCtx.lineTo(pos2.x + Math.cos(count) * 10, pos2.y + Math.sin(count));
 
-
-      //drawCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-
-      // gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 2, 2);
-      // drawCtx.arc(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 1, 0, 2 * PI, false);
-      // drawCtx.fill();
-      //gridCtx.lineWidth = 1;
-      //gridCtx.strokeStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      //gridCtx.stroke();
       drawCtx.stroke();
       drawCtx.closePath();
     });
