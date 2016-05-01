@@ -415,6 +415,8 @@ function draw(matrix, count) {
 
   var pos1 = {};
   var pos2 = {};
+  var sin;
+  var cos;
 
   matrix.forEach(function(row, rowIdx) {
     row.forEach(function(column, colIdx) {
@@ -427,17 +429,21 @@ function draw(matrix, count) {
       drawCtx.beginPath();
       drawCtx.lineCap= 'round';
 
-      color = column === 255 ? '#ffffff' : 'rgb(' + rowIdx + ', 0, ' + colIdx + ')'
+      sin = Math.sin(new Date().getMilliseconds());
+      cos = Math.cos(new Date().getMilliseconds());
+
+      // color = column === 255 ? '#ffffff' : 'rgb(' + rowIdx + ', ' + (Math.abs(sin * 255)) + ', ' + colIdx + ')'
+      color = column === 255 ?'#ffffff' : ['rgb(', rowIdx, ',', 100, ',', colIdx, ')'].join('');
       // color = 'rgba(0,0,0,0.1)';
 
       drawCtx.strokeStyle = color;
       drawCtx.lineWidth = 0.25;
 
       drawCtx.moveTo(pos1.x , pos1.y);
-      drawCtx.lineTo( (pos1.x + 10) + (Math.sin(new Date().getMilliseconds()) * 20), (pos1.y + 10) + Math.cos(new Date().getMilliseconds()));
+      drawCtx.lineTo( (pos1.x + 10) + (sin * 40), (pos1.y + 10) + cos);
 
       drawCtx.moveTo(pos2.x , pos2.y);
-      drawCtx.lineTo(pos2.x + 10, pos2.y + 10);
+      drawCtx.lineTo( (pos2.x + 10) + (sin * 40), (pos2.y + 10) + cos);
 
       drawCtx.stroke();
       drawCtx.closePath();
