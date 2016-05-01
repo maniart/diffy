@@ -432,17 +432,20 @@ function draw(matrix, count) {
       sin = Math.sin(new Date().getMilliseconds());
       cos = Math.cos(new Date().getMilliseconds());
 
-      color = column === 255 ?'#ffffff' : ['rgb(', Math.abs(cos * 255).toFixed(0), ',', Math.abs(sin * 255).toFixed(0), ',', colIdx, ')'].join('');
-      // color = 'rgba(0,0,0,0.1)';
+      // color = column === 255 ?'#ffffff' : ['rgb(', Math.abs(cos * 255).toFixed(0), ',', Math.abs(sin * 255).toFixed(0), ',', colIdx, ')'].join('');
+
+      color = column === 255 ? '#ffffff' : getRandomColor();
+
+
 
       drawCtx.strokeStyle = color;
-      drawCtx.lineWidth = 0.5;
+      drawCtx.lineWidth = 1;
 
       drawCtx.moveTo(pos1.x , pos1.y);
-      drawCtx.lineTo( (pos1.x + 10) + (sin * 40), (pos1.y + 10) + (cos * 40));
+      drawCtx.lineTo( (pos1.x + 15) + (sin * 40), (pos1.y + 15) + (cos * 40));
 
       drawCtx.moveTo(pos2.x , pos2.y);
-      drawCtx.lineTo( (pos2.x + 10) + (sin * 40), (pos2.y + 10) + (cos * 40));
+      drawCtx.lineTo( (pos2.x + 15) + (sin * 40), (pos2.y + 15) + (cos * 40));
 
       drawCtx.stroke();
 
