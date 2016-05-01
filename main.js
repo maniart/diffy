@@ -440,12 +440,17 @@ function draw(matrix, count) {
       drawCtx.lineWidth = 0.25;
 
       drawCtx.moveTo(pos1.x , pos1.y);
-      drawCtx.lineTo( (pos1.x + 10) + (sin * 40), (pos1.y + 10) + cos);
-
-      drawCtx.moveTo(pos2.x , pos2.y);
-      drawCtx.lineTo( (pos2.x + 10) + (sin * 40), (pos2.y + 10) + cos);
+      drawCtx.lineTo( (pos1.x + 10) + (sin * 40), (pos1.y + 10) + (cos * 40));
 
       drawCtx.stroke();
+
+
+      drawCtx.moveTo(pos2.x , pos2.y);
+      drawCtx.lineTo( (pos2.x + 10) + (sin * 40), (pos2.y + 10) + (cos * 40));
+
+      drawCtx.stroke();
+
+
       drawCtx.closePath();
     });
   });
