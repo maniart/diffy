@@ -35,7 +35,7 @@ function abs(value) {
   returns 0 or 0XFF
 */
 function polarize(value, threshold) {
-  return (value > threshold) ? 0xFF0033 : 0XFF;
+  return (value > threshold) ? 0x00 : 0XFF;
 }
 
 /*
@@ -57,7 +57,7 @@ function createDiffBuffer(messageEvent) {
       average1 = ((data1[i*4] + data1[i*4+1] + data1[i*4+2]) / 3) / sensitivity;
       average2 = ((data2[i*4] + data2[i*4+1] + data2[i*4+2]) / 3) / sensitivity;
       delta = polarize(
-        abs(average1 - average2), 0x15
+        abs(average1 - average2), 20
       );
 
       data[i] =
