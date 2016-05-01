@@ -409,9 +409,10 @@ var count = 0;
 /*
   main draw function
 */
-function draw(matrix) {
+function draw(matrix, count) {
   var color;
-  count += 0.1;
+  count += 1;
+
   var pos1 = {};
   var pos2 = {};
 
@@ -427,16 +428,16 @@ function draw(matrix) {
       drawCtx.lineCap= 'round';
 
       color = column === 255 ? '#ffffff' : 'rgb(' + rowIdx + ', 0, ' + colIdx + ')'
+      // color = 'rgba(0,0,0,0.1)';
 
       drawCtx.strokeStyle = color;
       drawCtx.lineWidth = 0.25;
 
+      drawCtx.moveTo(pos1.x , pos1.y);
+      drawCtx.lineTo( (pos1.x + 10) + (Math.sin(new Date().getMilliseconds()) * 20), (pos1.y + 10) + Math.cos(new Date().getMilliseconds()));
 
-      drawCtx.moveTo((pos1.x - 10), (pos1.y - 10));
-      drawCtx.lineTo(pos1.x + Math.cos(count) * 10, pos1.y + Math.sin(count));
-
-      drawCtx.moveTo((pos2.x - 10), (pos2.y - 10));
-      drawCtx.lineTo(pos2.x + Math.cos(count) * 10, pos2.y + Math.sin(count));
+      drawCtx.moveTo(pos2.x , pos2.y);
+      drawCtx.lineTo(pos2.x + 10, pos2.y + 10);
 
       drawCtx.stroke();
       drawCtx.closePath();
@@ -484,8 +485,7 @@ function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
 
-  draw(matrix()); // pixijs draw
-
+  draw(matrix(), new Date().getMilliseconds()); // pixijs draw
   // drawPixels(
   //   matrix(150)
   // );
