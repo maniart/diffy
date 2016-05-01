@@ -436,7 +436,7 @@ function draw(matrix, count) {
       // color = 'rgba(0,0,0,0.1)';
 
       drawCtx.strokeStyle = color;
-      drawCtx.lineWidth = 0.25;
+      drawCtx.lineWidth = 0.5;
 
       drawCtx.moveTo(pos1.x , pos1.y);
       drawCtx.lineTo( (pos1.x + 10) + (sin * 40), (pos1.y + 10) + (cos * 40));
