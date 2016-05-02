@@ -434,7 +434,7 @@ function draw(matrix, count) {
 
       // color = column === 255 ?'#ffffff' : ['rgb(', Math.abs(cos * 255).toFixed(0), ',', Math.abs(sin * 255).toFixed(0), ',', colIdx, ')'].join('');
 
-      color = column === 255 ? '#ffffff' : getRandomColor();
+      color = column === 255 ? '#000000' : getRandomColor();
 
 
 
