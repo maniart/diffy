@@ -106,6 +106,10 @@ var previousImageData;
 */
 var container = $('#container');
 
+// temp
+var scaleX = 1900 / 80;
+var scaleY = 1000 / 80;
+
 /*
   toggle raw and blend video
 */
@@ -415,8 +419,8 @@ function initPixi() {
   shapes.lineStyle(10, 0xffd900, 1);
 
   stage.addChild(shapes);
-  shapes.position.x = 100;
-  shapes.position.y = 100;
+  shapes.position.x = 0;
+  shapes.position.y = 0;
 
 
   stage.mask = shapes;
@@ -427,10 +431,33 @@ function initPixi() {
   draw pixiJS masking image
 */
 function drawPixi(matrix) {
+  // var color;
+  shapes.clear();
+  // shapes.beginFill(0x8bc5ff, 0.4);
+  shapes.lineStyle(1, 0xffffff, 1);
+  // draw a shape
+  // for(var i = 0 ; i < 6400; i ++) {
+  //   shapes.moveTo(-1 * count + i ,2 * i * count);
+  //   shapes.lineTo(count * i, count);
+  // }
+  // shapes.moveTo(100 ,100);
+  //       shapes.lineTo(1000, 1000);
 
+  matrix.forEach(function(row, rowIdx) {
+    row.forEach(function(column, colIdx) {
+      if(column === 0) {
+        shapes.moveTo(rowIdx * scaleX, colIdx * scaleY);
+        shapes.lineTo((rowIdx * scaleX) - 100 * Math.cos(100), (colIdx * scaleY) +  100 * Math.sin(100));
+        // thing.moveTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
+      // thing.lineTo(-320 + Math.cos(count)* 20, 100 + Math.sin(count)* 20);
+      // thing.lineTo(120 + Math.cos(count) * 20, -100 + Math.sin(count)* 20);
+      // thing.lineTo(120 + Math.sin(count) * 20, 100 + Math.cos(count)* 20);
+      }
 
+    });
+  });
 
-
+  renderer.render(stage);
 
 
 
@@ -570,18 +597,7 @@ function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
   count += 0.1;
-
-  shapes.clear();
-shapes.beginFill(0x8bc5ff, 0.4);
-shapes.lineStyle(1, 0xffffff, 1);
-// draw a shape
-  for(var i = 0 ; i < 6400; i ++) {
-    shapes.moveTo(-1 * count + i ,2 * i * count);
-    shapes.lineTo(count * i, count);
-  }
-  shapes.moveTo(100 ,100);
-        shapes.lineTo(1000, 1000);
-  renderer.render(stage);
+  drawPixi(matrix());
 
   // draw(matrix(), new Date().getMilliseconds()); // pixijs draw
   // drawPixels(
