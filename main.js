@@ -188,6 +188,13 @@ var _width = blendWidth;
 var _height = blendHeight;
 
 /*
+  PIXI related variables
+*/
+var renderer;
+var stage;
+var video;
+
+/*
   width to height ratio of all canvases
 */
 var ratio = blendWidth / blendHeight;
@@ -224,6 +231,15 @@ var GRID_RESOLUTION_Y = 80;
 var CELL_WIDTH = gridWidth / GRID_RESOLUTION_X;
 var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
 
+/*
+  PIXIjs variables
+*/
+var renderer;
+var stage;
+var video;
+var shapes;
+
+var count = 0;
 
 /*
   toggle the raw videos. callback for `toggleBtn` click
@@ -362,6 +378,65 @@ function matrix() {
 }
 
 /*
+  initialize pixi stage
+*/
+function initPixi() {
+  renderer = PIXI.autoDetectRenderer(1900, 1000, { antialias: true });
+  document.body.appendChild(renderer.view);
+
+  // create the root of the scene graph
+  stage = new PIXI.Container();
+  stage.interactive = true;
+  video = document.createElement('video');
+  video.preload = 'auto';
+  video.loop = true;              // enable looping
+  video.src = './assets/test.mp4';
+
+  // create a video texture from a path
+  var texture = PIXI.Texture.fromVideo(video);
+
+
+  // create a new Sprite using the video texture (yes it's that easy)
+  var videoSprite = new PIXI.Sprite(texture);
+
+
+  videoSprite.width = renderer.width;
+  videoSprite.height = renderer.height;
+
+  videoSprite.anchor.x = 0.5;
+  videoSprite.anchor.y = 0.5;
+
+  videoSprite.position.x = renderer.width / 2;
+  videoSprite.position.y = renderer.height / 2;
+
+  stage.addChild(videoSprite);
+
+  shapes = new PIXI.Graphics();
+  shapes.lineStyle(10, 0xffd900, 1);
+
+  stage.addChild(shapes);
+  shapes.position.x = 100;
+  shapes.position.y = 100;
+
+
+  stage.mask = shapes;
+
+}
+
+/*
+  draw pixiJS masking image
+*/
+function drawPixi(matrix) {
+
+
+
+
+
+
+
+}
+
+/*
   draw a matrix as a pixelated image
 */
 function drawPixels(matrix) {
@@ -442,10 +517,10 @@ function draw(matrix, count) {
       drawCtx.lineWidth = 1;
 
       drawCtx.moveTo(pos1.x , pos1.y);
-      drawCtx.lineTo( (pos1.x + 15) + (sin * 40), (pos1.y + 15) + (cos * 40));
+      drawCtx.lineTo( (pos1.x + 5), (pos1.y + 5));
 
-      drawCtx.moveTo(pos2.x , pos2.y);
-      drawCtx.lineTo( (pos2.x + 15) + (sin * 40), (pos2.y + 15) + (cos * 40));
+      //drawCtx.moveTo(pos2.x , pos2.y);
+      //drawCtx.lineTo( (pos2.x + 15) + (sin * 40), (pos2.y + 15) + (cos * 40));
 
       drawCtx.stroke();
 
@@ -494,8 +569,21 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
+  count += 0.1;
 
-  draw(matrix(), new Date().getMilliseconds()); // pixijs draw
+  shapes.clear();
+shapes.beginFill(0x8bc5ff, 0.4);
+shapes.lineStyle(1, 0xffffff, 1);
+// draw a shape
+  for(var i = 0 ; i < 6400; i ++) {
+    shapes.moveTo(-1 * count + i ,2 * i * count);
+    shapes.lineTo(count * i, count);
+  }
+  shapes.moveTo(100 ,100);
+        shapes.lineTo(1000, 1000);
+  renderer.render(stage);
+
+  // draw(matrix(), new Date().getMilliseconds()); // pixijs draw
   // drawPixels(
   //   matrix(150)
   // );
@@ -505,6 +593,9 @@ function loop() {
   requestAnimFrame(loop);
 }
 
+
+
+
 /*
   kickstart the process
 */
@@ -512,11 +603,17 @@ capture()
   .then(
     function(input) {
       // order is important
+      initPixi();
+
       differ.addEventListener('message', drawBlendImage);
       toggleBtn.addEventListener('click', toggle);
       [rawCanvas, blendCanvas].forEach(mirror);
       pipe(input, rawVideo);
       loop();
+
+
+
+
 
     }
   )
