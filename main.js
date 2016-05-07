@@ -462,6 +462,13 @@ function drawBlendImage(messageEvent) {
 }
 
 /*
+  show / hide debug images based on hashchange
+*/
+function toggleTheaterMode() {
+  document.body.classList[window.location.hash.indexOf('theatermode') > -1 ? 'add' : 'remove']('theater-mode');
+}
+
+/*
   iteratively calculate and draw
   returns undefined
 */
@@ -480,7 +487,9 @@ capture()
     function(input) {
       // order is important
       initPixi();
+      toggleTheaterMode();
       differ.addEventListener('message', drawBlendImage);
+      window.addEventListener('hashchange', toggleTheaterMode);
       toggleBtn.addEventListener('click', toggle);
       [rawCanvas, blendCanvas].forEach(mirror);
       pipe(input, rawVideo);

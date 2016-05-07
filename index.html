@@ -15,6 +15,10 @@
         body {
           background: #000;
         }
+        body.theater-mode #container,
+        body.theater-mode #toggle {
+          display: none;
+        }
         #raw-video {
           /*display: none;*/
           float: left;
@@ -40,7 +44,6 @@
         }
         canvas {}
         #container {
-          display: none;
           position: absolute;
           left: 0;
           top: 0;
@@ -50,7 +53,6 @@
           display: none;
         }
         #toggle {
-            display: none;
             background-color: white;
             outline: none;
             width: 30px;
