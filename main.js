@@ -176,9 +176,11 @@ var isWorkerAvailable = 'Worker' in window;
 var differ = new Worker('differ.js');
 
 /*
-  Save a reference to Math.PI
+  Save a reference to Math static props
 */
 var PI = Math.PI;
+var cos = Math.cos;
+var sin = Math.sin;
 
 /*
   grid image resolution values
@@ -199,13 +201,10 @@ var scaleX = STAGE_WIDTH / GRID_RESOLUTION_X;
 var scaleY = STAGE_HEIGHT / GRID_RESOLUTION_Y;
 
 /*
-  PIXIjs variables
+  incrementing counters used for animation.
 */
-var renderer;
-var stage;
-var video;
-
-var count = 0;
+var counter1 = 0;
+var counter2 = 0;
 
 /*
   toggle the raw videos. callback for `toggleBtn` click
@@ -219,7 +218,6 @@ function toggle(event) {
     container.classList.add('hidden');
     toggleBtn.textContent = '+';
   }
-
 }
 
 /*
@@ -352,16 +350,14 @@ function initPixi() {
   stage.interactive = true;
   video = document.createElement('video');
   video.preload = 'auto';
-  video.loop = true;              // enable looping
+  video.loop = true;  // enable looping
   video.src = './assets/test.mp4';
 
   // create a video texture from a path
   var texture = PIXI.Texture.fromVideo(video);
 
-
   // create a new Sprite using the video texture (yes it's that easy)
   var videoSprite = new PIXI.Sprite(texture);
-
 
   videoSprite.width = renderer.width;
   videoSprite.height = renderer.height;
@@ -375,51 +371,48 @@ function initPixi() {
   stage.addChild(videoSprite);
 
   shapes = new PIXI.Graphics();
-  shapes.lineStyle(10, 0xffd900, 1);
+  shapes.lineStyle(8, 0xffd900, 1);
 
   stage.addChild(shapes);
   shapes.position.x = 0;
   shapes.position.y = 0;
 
-
   stage.mask = shapes;
-
 }
 
 /*
   draw pixiJS masking image
 */
 function draw(matrix) {
-  // var color;
+  counter1 += 0.01;
+  counter2 += 0.05;
+
+  // position
+  var posX;
+  var posY;
+
   shapes.clear();
   // shapes.beginFill(0x8bc5ff, 0.4);
-  shapes.lineStyle(1, 0xffffff, 1);
-  // draw a shape
-  // for(var i = 0 ; i < 6400; i ++) {
-  //   shapes.moveTo(-1 * count + i ,2 * i * count);
-  //   shapes.lineTo(count * i, count);
-  // }
-  // shapes.moveTo(100 ,100);
-  //       shapes.lineTo(1000, 1000);
+  shapes.lineStyle(8, 0xffffff, 1);
 
   matrix.forEach(function(row, rowIdx) {
     row.forEach(function(column, colIdx) {
+      posX = rowIdx * scaleX;
+      posY = colIdx * scaleY;
+      // if value is 0 (black)
+      // meaning that a movement has been detected at this coords.
       if(column === 0) {
-        shapes.moveTo(rowIdx * scaleX, colIdx * scaleY);
-        shapes.lineTo((rowIdx * scaleX) - 100 * Math.cos(100), (colIdx * scaleY) +  100 * Math.sin(100));
+        shapes.moveTo(posX, posY);
+        // shapes.drawCircle(rowIdx * scaleX, colIdx * scaleY, 10); // drawCircle(x, y, radius)
+        shapes.lineTo(posX - 100 * sin(counter1), posY -  100 * cos(counter2));
+        // shapes.lineTo(posX - 100 * Math.cos(counter), posY +  100 * Math.sin(counter));
         // thing.moveTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
-      // thing.lineTo(-320 + Math.cos(count)* 20, 100 + Math.sin(count)* 20);
-      // thing.lineTo(120 + Math.cos(count) * 20, -100 + Math.sin(count)* 20);
-      // thing.lineTo(120 + Math.sin(count) * 20, 100 + Math.cos(count)* 20);
       }
 
     });
   });
 
   renderer.render(stage);
-
-
-
 }
 
 /*
