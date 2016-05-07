@@ -348,27 +348,27 @@ function initPixi() {
   // create the root of the scene graph
   stage = new PIXI.Container();
   // stage.interactive = true;
-  //video = document.createElement('video');
-  //video.preload = 'auto';
-  //video.loop = true;  // enable looping
-  //video.src = './assets/tehran-nyc.mp4';
+  video = document.createElement('video');
+  video.preload = 'auto';
+  video.loop = true;  // enable looping
+  video.src = './assets/tehran-nyc.mp4';
 
   // create a video texture from a path
-  // var texture = PIXI.Texture.fromVideo(video);
+  var texture = PIXI.Texture.fromVideo(video);
 
   // create a new Sprite using the video texture (yes it's that easy)
-  // var videoSprite = new PIXI.Sprite(texture);
+  var videoSprite = new PIXI.Sprite(texture);
 
-  //videoSprite.width = renderer.width;
-  //videoSprite.height = renderer.height;
+  videoSprite.width = renderer.width;
+  videoSprite.height = renderer.height;
 
-  // videoSprite.anchor.x = 0.5;
-  // videoSprite.anchor.y = 0.5;
+  videoSprite.anchor.x = 0.5;
+  videoSprite.anchor.y = 0.5;
 
-  // videoSprite.position.x = renderer.width / 2;
-  // videoSprite.position.y = renderer.height / 2;
-  //
-  // stage.addChild(videoSprite);
+  videoSprite.position.x = renderer.width / 2;
+  videoSprite.position.y = renderer.height / 2;
+
+  stage.addChild(videoSprite);
 
   shapes = new PIXI.Graphics();
   shapes.lineStyle(8, 0xffd900, 1);
@@ -377,7 +377,7 @@ function initPixi() {
   shapes.position.x = 0;
   shapes.position.y = 0;
 
-  // stage.mask = shapes;
+  stage.mask = shapes;
 }
 
 /*
@@ -405,10 +405,20 @@ function draw(matrix) {
         shapes.moveTo(posX, posY);
         // shapes.moveTo(posX * cos(counter1), posY * sin(counter1));
         // shapes.drawCircle(rowIdx * scaleX, colIdx * scaleY, 10); // drawCircle(x, y, radius)
-        shapes.lineTo(posX - 5, posY);
-        shapes.lineTo(posX, posY  - 5);
-        shapes.lineTo(posX + 5, posY);
+        shapes.lineTo(posX - 10, posY);
+        shapes.lineTo(posX - 20 , posY  - 10);
+        shapes.lineTo(posX + 10, posY - 10);
+        shapes.lineTo(posX + 20, posY);
+
         shapes.lineTo(posX, posY);
+
+        // shapes.moveTo(posX + 1, posY);
+        //
+        // shapes.lineTo(posX - 5, posY);
+        // shapes.lineTo(posX, posY  - 5);
+        // shapes.lineTo(posX + 5, posY);
+        // shapes.lineTo(posX, posY);
+
         // shapes.lineTo(posX - 15, posY  + 5);
         // shapes.lineTo(posX - 15, posY  + 15);
         // shapes.lineTo(posX - 100 * Math.cos(counter), posY +  100 * Math.sin(counter));
