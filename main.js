@@ -58,7 +58,6 @@ function $(selector) {
   return document.querySelector(selector);
 }
 
-
 /*
   utility function to log only once
 */
@@ -102,13 +101,9 @@ var currentImageData;
 var previousImageData;
 
 /*
-  debug image container
+  debug images container
 */
 var container = $('#container');
-
-// temp
-var scaleX = 1900 / 80;
-var scaleY = 1000 / 80;
 
 /*
   toggle raw and blend video
@@ -124,46 +119,6 @@ var rawVideo = $('#raw-video');
   canvas element rendering raw camera input
 */
 var rawCanvas = $('#raw-canvas');
-
-/*
-  canvas containing the grid
-*/
-var gridCanvas = $('#grid-canvas');
-
-/*
-  grid canvas context
-*/
-var gridCtx = gridCanvas.getContext('2d');
-
-/*
-  width of grid canvas
-*/
-var gridWidth = gridCanvas.width;
-
-/*
-  height of grid canvas
-*/
-var gridHeight = gridCanvas.height;
-
-/*
-  main drawing stage
-*/
-var drawCanvas = $('#draw-canvas');
-
-/*
-  main drawing context
-*/
-var drawCtx = drawCanvas.getContext('2d');
-
-/*
-  width of grid canvas
-*/
-var drawWidth = drawCanvas.width;
-
-/*
-  height of grid canvas
-*/
-var drawHeight = drawCanvas.height;
 
 /*
   canvas element rendering blend image
@@ -186,22 +141,24 @@ var blendWidth = blendCanvas.width;
 var blendHeight = blendCanvas.height;
 
 /*
-  uniform width of all "control" videso (raw, blend, etc.) - small canvases for debugging mostly.
-*/
-var _width = blendWidth;
-var _height = blendHeight;
-
-/*
-  PIXI related variables
+  PIXI renderer
 */
 var renderer;
+
+/*
+  PIXI stage
+*/
 var stage;
+
+/*
+  PIXI background video
+*/
 var video;
 
 /*
-  width to height ratio of all canvases
+  PIXI mask shapes
 */
-var ratio = blendWidth / blendHeight;
+var shapes;
 
 /*
   blend imageData
@@ -230,10 +187,16 @@ var GRID_RESOLUTION_X = 80;
 var GRID_RESOLUTION_Y = 80;
 
 /*
-  grid cell resolution
+  Stage size
 */
-var CELL_WIDTH = gridWidth / GRID_RESOLUTION_X;
-var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
+var STAGE_WIDTH = 1900;
+var STAGE_HEIGHT = 1000;
+
+/*
+  Scale factor
+*/
+var scaleX = STAGE_WIDTH / GRID_RESOLUTION_X;
+var scaleY = STAGE_HEIGHT / GRID_RESOLUTION_Y;
 
 /*
   PIXIjs variables
@@ -241,7 +204,6 @@ var CELL_HEIGHT = gridHeight / GRID_RESOLUTION_Y;
 var renderer;
 var stage;
 var video;
-var shapes;
 
 var count = 0;
 
@@ -367,9 +329,6 @@ function matrix() {
         ++k;
       }
       average = round(average / cellPixelCount);
-      // gridCtx.beginPath();
-      // gridCtx.rect(i, j, cellWidth * 4, cellHeight * 4);
-      //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
       /* push the value in the row */
       row.push(average  );
       average = 0;
@@ -430,7 +389,7 @@ function initPixi() {
 /*
   draw pixiJS masking image
 */
-function drawPixi(matrix) {
+function draw(matrix) {
   // var color;
   shapes.clear();
   // shapes.beginFill(0x8bc5ff, 0.4);
@@ -460,108 +419,6 @@ function drawPixi(matrix) {
   renderer.render(stage);
 
 
-
-}
-
-/*
-  draw a matrix as a pixelated image
-*/
-function drawPixels(matrix) {
-  matrix.forEach(function(row, rowIdx) {
-    row.forEach(function(column, colIdx) {
-      gridCtx.beginPath();
-      gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
-      gridCtx.closePath();
-    });
-  });
-}
-
-/*
-  draw a matrix as hit points
-*/
-function drawGrid(matrix) {
-  // var color;
-  matrix.forEach(function(row, rowIdx) {
-    row.forEach(function(column, colIdx) {
-      // color = column < 200 ? 0 : 255;
-      gridCtx.beginPath();
-      gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      // gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 2, 2);
-      gridCtx.arc(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 1, 0, 2 * PI, false);
-      gridCtx.fill();
-      //gridCtx.lineWidth = 1;
-      //gridCtx.strokeStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      //gridCtx.stroke();
-      gridCtx.closePath();
-    });
-  });
-}
-
-function getRandomColor() {
-  var colors = [
-    '#00ffff',
-    '#ff00ff',
-    '#000000',
-    '#ffff00'
-  ];
-  return colors[ Math.floor ( Math.random() * (colors.length ))];
-}
-var count = 0;
-/*
-  main draw function
-*/
-function draw(matrix, count) {
-  var color;
-  count += 1;
-
-  var pos1 = {};
-  var pos2 = {};
-  var sin;
-  var cos;
-
-  matrix.forEach(function(row, rowIdx) {
-    row.forEach(function(column, colIdx) {
-      pos1.x = rowIdx * CELL_WIDTH;
-      pos1.y = colIdx * CELL_HEIGHT;
-
-      pos2.x = drawWidth - pos1.x;
-      pos2.y = pos1.y;
-
-      drawCtx.beginPath();
-      drawCtx.lineCap= 'round';
-
-      sin = Math.sin(new Date().getMilliseconds());
-      cos = Math.cos(new Date().getMilliseconds());
-
-      // color = column === 255 ?'#ffffff' : ['rgb(', Math.abs(cos * 255).toFixed(0), ',', Math.abs(sin * 255).toFixed(0), ',', colIdx, ')'].join('');
-
-      color = column === 255 ? '#000000' : getRandomColor();
-
-
-
-      drawCtx.strokeStyle = color;
-      drawCtx.lineWidth = 1;
-
-      drawCtx.moveTo(pos1.x , pos1.y);
-      drawCtx.lineTo( (pos1.x + 5), (pos1.y + 5));
-
-      //drawCtx.moveTo(pos2.x , pos2.y);
-      //drawCtx.lineTo( (pos2.x + 15) + (sin * 40), (pos2.y + 15) + (cos * 40));
-
-      drawCtx.stroke();
-
-
-      drawCtx.closePath();
-    });
-  });
-}
-
-/*
-  center the canvas
-  returns canvas
-*/
-function center(canvas) {
 
 }
 
@@ -596,21 +453,9 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  count += 0.1;
-  drawPixi(matrix());
-
-  // draw(matrix(), new Date().getMilliseconds()); // pixijs draw
-  // drawPixels(
-  //   matrix(150)
-  // );
-
-  // drawGrid(matrix());
-
+  draw(matrix());
   requestAnimFrame(loop);
 }
-
-
-
 
 /*
   kickstart the process
@@ -620,17 +465,11 @@ capture()
     function(input) {
       // order is important
       initPixi();
-
       differ.addEventListener('message', drawBlendImage);
       toggleBtn.addEventListener('click', toggle);
       [rawCanvas, blendCanvas].forEach(mirror);
       pipe(input, rawVideo);
       loop();
-
-
-
-
-
     }
   )
   .catch(
