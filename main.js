@@ -185,8 +185,8 @@ var sin = Math.sin;
 /*
   grid image resolution values
 */
-var GRID_RESOLUTION_X = 80;
-var GRID_RESOLUTION_Y = 80;
+var GRID_RESOLUTION_X = 200;
+var GRID_RESOLUTION_Y = 200;
 
 /*
   Stage size
@@ -347,28 +347,28 @@ function initPixi() {
 
   // create the root of the scene graph
   stage = new PIXI.Container();
-  stage.interactive = true;
-  video = document.createElement('video');
-  video.preload = 'auto';
-  video.loop = true;  // enable looping
-  video.src = './assets/test.mp4';
+  // stage.interactive = true;
+  //video = document.createElement('video');
+  //video.preload = 'auto';
+  //video.loop = true;  // enable looping
+  //video.src = './assets/tehran-nyc.mp4';
 
   // create a video texture from a path
-  var texture = PIXI.Texture.fromVideo(video);
+  // var texture = PIXI.Texture.fromVideo(video);
 
   // create a new Sprite using the video texture (yes it's that easy)
-  var videoSprite = new PIXI.Sprite(texture);
+  // var videoSprite = new PIXI.Sprite(texture);
 
-  videoSprite.width = renderer.width;
-  videoSprite.height = renderer.height;
+  //videoSprite.width = renderer.width;
+  //videoSprite.height = renderer.height;
 
-  videoSprite.anchor.x = 0.5;
-  videoSprite.anchor.y = 0.5;
+  // videoSprite.anchor.x = 0.5;
+  // videoSprite.anchor.y = 0.5;
 
-  videoSprite.position.x = renderer.width / 2;
-  videoSprite.position.y = renderer.height / 2;
-
-  stage.addChild(videoSprite);
+  // videoSprite.position.x = renderer.width / 2;
+  // videoSprite.position.y = renderer.height / 2;
+  //
+  // stage.addChild(videoSprite);
 
   shapes = new PIXI.Graphics();
   shapes.lineStyle(8, 0xffd900, 1);
@@ -377,7 +377,7 @@ function initPixi() {
   shapes.position.x = 0;
   shapes.position.y = 0;
 
-  stage.mask = shapes;
+  // stage.mask = shapes;
 }
 
 /*
@@ -385,7 +385,7 @@ function initPixi() {
 */
 function draw(matrix) {
   counter1 += 0.01;
-  counter2 += 0.05;
+  // counter2 += 0.05;
 
   // position
   var posX;
@@ -393,7 +393,7 @@ function draw(matrix) {
 
   shapes.clear();
   // shapes.beginFill(0x8bc5ff, 0.4);
-  shapes.lineStyle(8, 0xffffff, 1);
+  shapes.lineStyle(1, 0xffffff, 1);
 
   matrix.forEach(function(row, rowIdx) {
     row.forEach(function(column, colIdx) {
@@ -403,8 +403,14 @@ function draw(matrix) {
       // meaning that a movement has been detected at this coords.
       if(column === 0) {
         shapes.moveTo(posX, posY);
+        // shapes.moveTo(posX * cos(counter1), posY * sin(counter1));
         // shapes.drawCircle(rowIdx * scaleX, colIdx * scaleY, 10); // drawCircle(x, y, radius)
-        shapes.lineTo(posX - 100 * sin(counter1), posY -  100 * cos(counter2));
+        shapes.lineTo(posX - 5, posY);
+        shapes.lineTo(posX, posY  - 5);
+        shapes.lineTo(posX + 5, posY);
+        shapes.lineTo(posX, posY);
+        // shapes.lineTo(posX - 15, posY  + 5);
+        // shapes.lineTo(posX - 15, posY  + 15);
         // shapes.lineTo(posX - 100 * Math.cos(counter), posY +  100 * Math.sin(counter));
         // thing.moveTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
       }
