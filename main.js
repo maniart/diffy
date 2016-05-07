@@ -380,6 +380,20 @@ function initPixi() {
   stage.mask = shapes;
 }
 
+function drawShapes(graphicsObj, posX, posY, scale) {
+  var a = 10 * scale;
+  var b = a * 2;
+  graphicsObj.moveTo(posX, posY);
+  // shapes.moveTo(posX * cos(counter1), posY * sin(counter1));
+  // shapes.drawCircle(rowIdx * scaleX, colIdx * scaleY, 10); // drawCircle(x, y, radius)
+  graphicsObj.lineTo(posX - a , posY);
+  graphicsObj.lineTo(posX - b , posY  - a);
+  graphicsObj.lineTo(posX + a, posY - a);
+  graphicsObj.lineTo(posX + b, posY);
+
+  shapes.lineTo(posX, posY);
+}
+
 /*
   draw pixiJS masking image
 */
@@ -402,16 +416,8 @@ function draw(matrix) {
       // if value is 0 (black)
       // meaning that a movement has been detected at this coords.
       if(column === 0) {
-        shapes.moveTo(posX, posY);
-        // shapes.moveTo(posX * cos(counter1), posY * sin(counter1));
-        // shapes.drawCircle(rowIdx * scaleX, colIdx * scaleY, 10); // drawCircle(x, y, radius)
-        shapes.lineTo(posX - 10, posY);
-        shapes.lineTo(posX - 20 , posY  - 10);
-        shapes.lineTo(posX + 10, posY - 10);
-        shapes.lineTo(posX + 20, posY);
 
-        shapes.lineTo(posX, posY);
-
+        drawShapes(shapes, posX, posY, Math.floor(Math.random() * 2));
         // shapes.moveTo(posX + 1, posY);
         //
         // shapes.lineTo(posX - 5, posY);
