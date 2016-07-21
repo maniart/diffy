@@ -315,9 +315,6 @@ function matrix() {
         ++k;
       }
       average = round(average / cellPixelCount);
-      // gridCtx.beginPath();
-      // gridCtx.rect(i, j, cellWidth * 4, cellHeight * 4);
-      //gridCtx.arc(i, j, cellWidth/3, 0, 2 * Math.PI, false);
       /* push the value in the row */
       row.push(average  );
       average = 0;
@@ -330,46 +327,19 @@ function matrix() {
 }
 
 /*
-  draw a matrix as a pixelated image
-*/
-function drawPixels(matrix) {
-  matrix.forEach(function(row, rowIdx) {
-    row.forEach(function(column, colIdx) {
-      gridCtx.beginPath();
-      gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
-      gridCtx.closePath();
-    });
-  });
-}
-
-/*
   draw a matrix as hit points
 */
 function drawGrid(matrix) {
   // var color;
   matrix.forEach(function(row, rowIdx) {
     row.forEach(function(column, colIdx) {
-      // color = column < 200 ? 0 : 255;
       gridCtx.beginPath();
       gridCtx.fillStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      // gridCtx.fillRect(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 2, 2);
       gridCtx.arc(rowIdx * CELL_WIDTH, colIdx * CELL_HEIGHT, 1, 0, 2 * PI, false);
       gridCtx.fill();
-      //gridCtx.lineWidth = 1;
-      //gridCtx.strokeStyle = 'rgb(' + column + ',' + column + ',' + column + ')';
-      //gridCtx.stroke();
       gridCtx.closePath();
     });
   });
-}
-
-/*
-  center the canvas
-  returns canvas
-*/
-function center(canvas) {
-
 }
 
 /*
@@ -403,10 +373,6 @@ function drawBlendImage(messageEvent) {
 function loop() {
   pipe(rawVideo, rawCanvas);
   blend(rawCanvas, blendCanvas);
-  // drawPixels(
-  //   matrix(150)
-  // );
-
   drawGrid(matrix());
 
   requestAnimFrame(loop);
